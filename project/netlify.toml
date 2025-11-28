@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "export NEXTAUTH_URL=$URL && npm run build"
   publish = ".next"
 
 [[plugins]]
