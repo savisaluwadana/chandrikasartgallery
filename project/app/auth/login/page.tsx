@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { signIn } from 'next-auth/react';
+import { useAuth } from '@/lib/auth-context';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2, ArrowLeft, CheckCircle } from 'lucide-react';
@@ -9,6 +9,7 @@ import { Loader2, ArrowLeft, CheckCircle } from 'lucide-react';
 export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -27,14 +28,10 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false,
-      });
+      const result = await login(email, password);
 
-      if (result?.error) {
-        setError(result.error);
+      if (!result.success) {
+        setError(result.error || 'Login failed');
       } else {
         // Redirect based on role - will be handled by the page they came from
         router.push('/');

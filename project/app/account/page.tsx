@@ -1,13 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useAuth } from '@/lib/auth-context';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Loader2, ArrowLeft, User, Mail, Shield, CheckCircle, AlertCircle } from 'lucide-react';
 
 export default function AccountPage() {
-  const { data: session, status, update } = useSession();
+  const { user, loading: authLoading, refreshSession } = useAuth();
   const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -20,14 +20,14 @@ export default function AccountPage() {
   const [activeTab, setActiveTab] = useState<'profile' | 'password'>('profile');
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
+    if (!authLoading && !user) {
       router.push('/auth/login');
     }
-    if (session?.user) {
-      setName(session.user.name || '');
-      setEmail(session.user.email || '');
+    if (user) {
+      setName(user.name || '');
+      setEmail(user.email || '');
     }
-  }, [session, status, router]);
+  }, [user, authLoading, router]);
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,7 +46,7 @@ export default function AccountPage() {
 
       if (res.ok) {
         setSuccess('Profile updated successfully');
-        await update({ name });
+        await refreshSession();
       } else {
         setError(data.error || 'Failed to update profile');
       }
@@ -98,7 +98,7 @@ export default function AccountPage() {
     }
   };
 
-  if (status === 'loading') {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-white/40" />
@@ -106,11 +106,11 @@ export default function AccountPage() {
     );
   }
 
-  if (!session) {
+  if (!user) {
     return null;
   }
 
-  const isAdmin = (session.user as any)?.role === 'admin';
+  const isAdmin = user.role === 'admin';
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
@@ -137,12 +137,12 @@ export default function AccountPage() {
           <div className="flex items-center gap-6 mb-12">
             <div className="w-20 h-20 rounded-full bg-white/[0.05] border border-white/[0.08] flex items-center justify-center">
               <span className="text-3xl font-light text-white/60">
-                {session.user?.name?.charAt(0)?.toUpperCase() || 'U'}
+                {user.name?.charAt(0)?.toUpperCase() || 'U'}
               </span>
             </div>
             <div>
-              <h1 className="text-2xl font-light text-white mb-1">{session.user?.name}</h1>
-              <p className="text-white/40 text-sm">{session.user?.email}</p>
+              <h1 className="text-2xl font-light text-white mb-1">{user.name}</h1>
+              <p className="text-white/40 text-sm">{user.email}</p>
               {isAdmin && (
                 <span className="inline-block mt-2 px-3 py-1 rounded-full bg-white/10 text-xs uppercase tracking-wider text-white/60">
                   <Shield size={12} className="inline mr-1.5" />

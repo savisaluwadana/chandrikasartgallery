@@ -1,6 +1,9 @@
-import NextAuth from 'next-auth';
-import { authOptions } from '@/lib/auth';
+// This file is deprecated - using custom JWT auth instead
+// Can be deleted
+export async function GET() {
+  return new Response('Not found', { status: 404 });
+}
 
-const handler = NextAuth(authOptions);
-
-export { handler as GET, handler as POST };
+export async function POST() {
+  return new Response('Not found', { status: 404 });
+}

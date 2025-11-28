@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
+import { getSessionFromRequest } from '@/lib/auth';
 import connectDB from '@/lib/mongodb';
 import User from '@/lib/models/User';
 
 export async function PUT(request: NextRequest) {
   try {
-    const session = await getServerSession();
+    const session = getSessionFromRequest(request);
     
     if (!session?.user?.email) {
       return NextResponse.json(

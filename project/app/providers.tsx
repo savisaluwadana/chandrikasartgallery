@@ -1,17 +1,11 @@
 'use client';
 
-import { SessionProvider } from 'next-auth/react';
+import { AuthProvider } from '@/lib/auth-context';
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  // Get the base URL from environment or use relative path
-  const baseUrl = typeof window !== 'undefined' ? window.location.origin : '';
-  
   return (
-    <SessionProvider 
-      basePath="/api/auth"
-      refetchOnWindowFocus={false}
-    >
+    <AuthProvider>
       {children}
-    </SessionProvider>
+    </AuthProvider>
   );
 }

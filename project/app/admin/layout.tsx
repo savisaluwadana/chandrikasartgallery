@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useSession, signOut } from 'next-auth/react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth-context';
 import { 
   Menu, 
   X, 
@@ -24,7 +24,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const router = useRouter();
+  const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/');
+  };
 
   const navItems = [
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -99,7 +105,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <span>View Site</span>
           </Link>
           <button
-            onClick={() => signOut({ callbackUrl: '/' })}
+            onClick={handleLogout}
             className="flex items-center gap-2 w-full px-3 py-2 rounded-lg text-red-400/80 hover:text-red-400 hover:bg-red-500/10 transition-all text-sm"
           >
             <LogOut size={16} />
@@ -126,11 +132,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             >
               <div className="h-8 w-8 rounded-full bg-white/10 flex items-center justify-center">
                 <span className="text-white text-xs font-medium">
-                  {session?.user?.name?.charAt(0)?.toUpperCase() || 'A'}
+                  {user?.name?.charAt(0)?.toUpperCase() || 'A'}
                 </span>
               </div>
               <span className="text-sm text-white/70 hidden sm:block">
-                {session?.user?.name?.split(' ')[0] || 'Admin'}
+                {user?.name?.split(' ')[0] || 'Admin'}
               </span>
               <ChevronDown size={14} className={`text-white/40 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
             </button>
@@ -144,8 +150,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 />
                 <div className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-white/[0.08] bg-[#0a0a0a] shadow-2xl overflow-hidden z-50">
                   <div className="px-4 py-3 border-b border-white/[0.05]">
-                    <p className="text-sm font-medium text-white truncate">{session?.user?.name}</p>
-                    <p className="text-xs text-white/40 truncate">{session?.user?.email}</p>
+                    <p className="text-sm font-medium text-white truncate">{user?.name}</p>
+                    <p className="text-xs text-white/40 truncate">{user?.email}</p>
                     <span className="inline-block mt-2 px-2 py-0.5 rounded-full bg-white/10 text-[10px] uppercase tracking-wider text-white/60">
                       Admin
                     </span>
@@ -164,7 +170,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <button
                       onClick={() => {
                         setUserMenuOpen(false);
-                        signOut({ callbackUrl: '/' });
+                        handleLogout();
                       }}
                       className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all"
                     >
