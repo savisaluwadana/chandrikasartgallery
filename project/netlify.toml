@@ -7,10 +7,3 @@
 
 [build.environment]
   NODE_VERSION = "18"
-
-# Redirects for SPA routing (if needed)
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  conditions = {Role = ["admin"]}
