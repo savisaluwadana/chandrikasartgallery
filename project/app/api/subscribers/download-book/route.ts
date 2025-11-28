@@ -21,7 +21,8 @@ export async function POST(req: NextRequest) {
     );
 
     // Generate download link (in production, this could be a signed URL or direct file link)
-    const downloadLink = `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/subscribers/download-book/file`;
+    const baseUrl = process.env.NEXTAUTH_URL || process.env.URL || process.env.DEPLOY_PRIME_URL;
+    const downloadLink = `${baseUrl}/api/subscribers/download-book/file`;
 
     // Send download email with the guide
     try {
