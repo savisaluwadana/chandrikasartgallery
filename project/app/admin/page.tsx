@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { 
-  FileText, 
-  Package, 
-  Users, 
+import {
+  FileText,
+  Package,
+  Users,
   Image,
   TrendingUp,
   ArrowUpRight,
@@ -32,10 +32,10 @@ export default function AdminDashboard() {
     async function fetchStats() {
       try {
         const [blogRes, productsRes, subscribersRes, imagesRes] = await Promise.all([
-          fetch('/api/blog/list').catch(() => ({ ok: false })),
-          fetch('/api/shop/products').catch(() => ({ ok: false })),
-          fetch('/api/subscribers/list').catch(() => ({ ok: false })),
-          fetch('/api/images/list').catch(() => ({ ok: false }))
+          fetch('/api/blog/list', { cache: 'no-store' }).catch(() => ({ ok: false })),
+          fetch('/api/shop/products', { cache: 'no-store' }).catch(() => ({ ok: false })),
+          fetch('/api/subscribers/list', { cache: 'no-store' }).catch(() => ({ ok: false })),
+          fetch('/api/images/list', { cache: 'no-store' }).catch(() => ({ ok: false }))
         ]);
 
         const blogData = blogRes.ok ? await (blogRes as Response).json() : { posts: [] };
@@ -60,34 +60,34 @@ export default function AdminDashboard() {
   }, []);
 
   const statCards = [
-    { 
-      label: 'Blog Posts', 
-      value: stats.blogPosts, 
-      icon: FileText, 
+    {
+      label: 'Blog Posts',
+      value: stats.blogPosts,
+      icon: FileText,
       href: '/admin/blog',
       change: '+2 this week',
       color: 'bg-violet-500/10 text-violet-400'
     },
-    { 
-      label: 'Products', 
-      value: stats.products, 
-      icon: Package, 
+    {
+      label: 'Products',
+      value: stats.products,
+      icon: Package,
       href: '/admin/products',
       change: 'Manage inventory',
       color: 'bg-blue-500/10 text-blue-400'
     },
-    { 
-      label: 'Subscribers', 
-      value: stats.subscribers, 
-      icon: Users, 
+    {
+      label: 'Subscribers',
+      value: stats.subscribers,
+      icon: Users,
       href: '/admin/subscribers',
       change: 'Active users',
       color: 'bg-emerald-500/10 text-emerald-400'
     },
-    { 
-      label: 'Gallery Images', 
-      value: stats.images, 
-      icon: Image, 
+    {
+      label: 'Gallery Images',
+      value: stats.images,
+      icon: Image,
       href: '/admin/gallery',
       change: 'Media library',
       color: 'bg-amber-500/10 text-amber-400'
@@ -134,9 +134,9 @@ export default function AdminDashboard() {
                   <div className={`p-2.5 rounded-lg ${stat.color}`}>
                     <Icon size={18} />
                   </div>
-                  <ArrowUpRight 
-                    size={16} 
-                    className="text-white/20 group-hover:text-white/60 transition-colors" 
+                  <ArrowUpRight
+                    size={16}
+                    className="text-white/20 group-hover:text-white/60 transition-colors"
                   />
                 </div>
                 <div className="space-y-1">
@@ -172,11 +172,10 @@ export default function AdminDashboard() {
             ].map((item, i) => (
               <Link key={i} href={item.href}>
                 <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/[0.03] transition-colors group">
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                    item.done 
-                      ? 'bg-emerald-500 border-emerald-500' 
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${item.done
+                      ? 'bg-emerald-500 border-emerald-500'
                       : 'border-white/20'
-                  }`}>
+                    }`}>
                     {item.done && (
                       <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
@@ -186,9 +185,9 @@ export default function AdminDashboard() {
                   <span className={`text-sm ${item.done ? 'text-white/40 line-through' : 'text-white/70'}`}>
                     {item.text}
                   </span>
-                  <ArrowUpRight 
-                    size={14} 
-                    className="ml-auto text-white/0 group-hover:text-white/40 transition-colors" 
+                  <ArrowUpRight
+                    size={14}
+                    className="ml-auto text-white/0 group-hover:text-white/40 transition-colors"
                   />
                 </div>
               </Link>

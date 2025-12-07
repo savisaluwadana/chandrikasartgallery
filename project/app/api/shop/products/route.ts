@@ -3,6 +3,8 @@ import { getSessionFromRequest } from '@/lib/auth';
 import { connectToDatabase } from '@/lib/mongodb';
 import { ArtProduct } from '@/lib/models';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
     await connectToDatabase();
