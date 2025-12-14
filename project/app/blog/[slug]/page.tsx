@@ -1,205 +1,95 @@
-'use client';
+import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
+import { connectToDatabase } from '@/lib/mongodb';
+import { BlogPost } from '@/lib/models';
+import { generateBlogMetadata, siteConfig } from '@/lib/seo';
+import { generateBlogPostSchema, generateBreadcrumbSchema } from '@/lib/schema';
+import BlogPostContent from './BlogPostContent';
 
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
-import Link from 'next/link';
-import { Loader2, ArrowLeft, ArrowUpRight, Clock, Share2 } from 'lucide-react';
-import { AuthNav } from '@/components/auth-nav';
-
-interface BlogPost {
-  _id: string;
-  title: string;
-  content: string;
-  author: { name: string };
-  publishDate?: Date;
-  featuredImage?: string;
-  wordCount: number;
+interface Props {
+  params: { slug: string };
 }
 
-export default function BlogPostPage() {
-  const params = useParams();
-  const slug = params.slug as string;
-  const [post, setPost] = useState<BlogPost | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+// Generate dynamic metadata for SEO
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  try {
+    await connectToDatabase();
+    const post = await BlogPost.findOne({ slug: params.slug, status: 'published' })
+      .populate('author', 'name')
+      .lean();
 
-  useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const res = await fetch(`/api/blog/${slug}`);
-        if (!res.ok) throw new Error('Post not found');
-        const data = await res.json();
-        setPost(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Error loading post');
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (!post) {
+      return { title: 'Post Not Found' };
+    }
 
-    if (slug) fetchPost();
-  }, [slug]);
-
-  const readingTime = (words: number) => Math.ceil(words / 200);
-  
-  const formatDate = (date: Date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-white/40" />
-      </div>
+    return generateBlogMetadata(
+      post.title,
+      post.excerpt || post.content?.substring(0, 160) || '',
+      params.slug,
+      post.featuredImage,
+      post.publishDate,
+      post.author?.name
     );
+  } catch (error) {
+    return { title: 'Blog Post' };
+  }
+}
+
+// Fetch post data server-side
+async function getPost(slug: string) {
+  try {
+    await connectToDatabase();
+    const post = await BlogPost.findOne({ slug, status: 'published' })
+      .populate('author', 'name')
+      .lean();
+
+    if (post) {
+      return JSON.parse(JSON.stringify(post));
+    }
+    return null;
+  } catch (error) {
+    console.error('Error fetching post:', error);
+    return null;
+  }
+}
+
+export default async function BlogPostPage({ params }: Props) {
+  const post = await getPost(params.slug);
+
+  if (!post) {
+    notFound();
   }
 
-  if (error || !post) {
-    return (
-      <div className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-center px-6">
-        <div className="w-16 h-16 rounded-full bg-white/[0.03] border border-white/[0.05] flex items-center justify-center mb-6">
-          <span className="text-2xl text-white/20">?</span>
-        </div>
-        <h1 className="text-2xl font-light text-white mb-3">{error || 'Article not found'}</h1>
-        <p className="text-white/40 mb-8">The article you are looking for does not exist.</p>
-        <Link href="/blog" className="inline-flex items-center gap-2 px-6 py-3 bg-white text-black rounded-full font-medium hover:bg-white/90 transition-all">
-          Back to Journal
-        </Link>
-      </div>
-    );
-  }
+  // Generate JSON-LD schemas
+  const blogPostSchema = generateBlogPostSchema(
+    post.title,
+    post.excerpt || post.content?.substring(0, 160) || '',
+    post.author?.name || 'Chandrika Maelge',
+    new Date(post.publishDate || post.createdAt),
+    `${siteConfig.url}/blog/${params.slug}`,
+    new Date(post.updatedAt),
+    post.featuredImage
+  );
+
+  const breadcrumbSchema = generateBreadcrumbSchema([
+    { name: 'Home', url: siteConfig.url },
+    { name: 'Journal', url: `${siteConfig.url}/blog` },
+    { name: post.title, url: `${siteConfig.url}/blog/${params.slug}` },
+  ]);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a]">
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full z-40 bg-black/80 backdrop-blur-xl border-b border-white/[0.05]">
-        <div className="max-w-7xl mx-auto px-6 lg:px-12">
-          <div className="flex items-center justify-between h-20">
-            <Link href="/blog" className="flex items-center gap-3 text-white/60 hover:text-white transition-colors">
-              <ArrowLeft size={18} />
-              <span className="text-sm tracking-wide">Journal</span>
-            </Link>
-            <div className="flex items-center gap-3">
-              <button className="p-2 rounded-full border border-white/10 text-white/60 hover:text-white hover:border-white/20 transition-all">
-                <Share2 size={16} />
-              </button>
-              <AuthNav />
-            </div>
-          </div>
-        </div>
-      </nav>
+    <>
+      {/* JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogPostSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
 
-      {/* Article Header */}
-      <header className="pt-32 pb-16 px-6 lg:px-12">
-        <div className="max-w-3xl mx-auto">
-          {/* Meta */}
-          <div className="flex items-center gap-4 text-xs text-white/40 mb-8">
-            {post.publishDate && (
-              <span>{formatDate(post.publishDate)}</span>
-            )}
-            <span className="w-1 h-1 rounded-full bg-white/20" />
-            <span className="flex items-center gap-1">
-              <Clock size={12} />
-              {readingTime(post.wordCount)} min read
-            </span>
-          </div>
-
-          {/* Title */}
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extralight text-white leading-tight mb-8">
-            {post.title}
-          </h1>
-
-          {/* Author */}
-          <div className="flex items-center gap-4 pt-8 border-t border-white/[0.05]">
-            <div className="w-12 h-12 rounded-full bg-white/[0.05] border border-white/[0.05] flex items-center justify-center">
-              <span className="text-sm font-light text-white/40">
-                {post.author?.name?.charAt(0) || 'A'}
-              </span>
-            </div>
-            <div>
-              <span className="text-white font-light block">{post.author?.name || 'The Artist'}</span>
-              <span className="text-white/40 text-sm">Author</span>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* Featured Image */}
-      {post.featuredImage && (
-        <div className="px-6 lg:px-12 mb-16">
-          <div className="max-w-5xl mx-auto">
-            <div className="aspect-[21/9] rounded-2xl overflow-hidden border border-white/[0.05]">
-              <img
-                src={post.featuredImage}
-                alt={post.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Content */}
-      <article className="px-6 lg:px-12 pb-20">
-        <div className="max-w-3xl mx-auto">
-          <div className="prose prose-lg prose-invert max-w-none">
-            <p className="text-lg text-white/70 leading-relaxed font-light whitespace-pre-wrap">
-              {post.content}
-            </p>
-          </div>
-        </div>
-      </article>
-
-      {/* Share & Tags */}
-      <div className="px-6 lg:px-12 pb-20">
-        <div className="max-w-3xl mx-auto">
-          <div className="flex items-center justify-between py-8 border-t border-white/[0.05]">
-            <span className="text-white/40 text-sm">{post.wordCount} words</span>
-            <button className="flex items-center gap-2 text-white/60 hover:text-white transition-colors">
-              <Share2 size={16} />
-              <span className="text-sm">Share</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Subscribe CTA */}
-      <section className="px-6 lg:px-12 pb-20">
-        <div className="max-w-3xl mx-auto">
-          <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-10 text-center relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-br from-amber-500/5 to-transparent rounded-full blur-3xl" />
-            <div className="relative z-10">
-              <h2 className="text-2xl font-light text-white mb-3">
-                Enjoyed this article?
-              </h2>
-              <p className="text-white/40 mb-8 font-light">
-                Subscribe to receive new stories directly in your inbox
-              </p>
-              <Link href="/subscribe" className="inline-flex items-center gap-2 px-6 py-3 bg-white text-black rounded-full font-medium hover:bg-white/90 transition-all">
-                Subscribe to Newsletter
-                <ArrowUpRight size={16} />
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* More Articles */}
-      <section className="border-t border-white/[0.05] py-20 px-6 lg:px-12">
-        <div className="max-w-7xl mx-auto text-center">
-          <h2 className="text-2xl font-light text-white mb-4">
-            Continue Reading
-          </h2>
-          <Link href="/blog" className="inline-flex items-center gap-2 px-6 py-3 border border-white/20 text-white rounded-full font-light hover:bg-white/5 transition-all">
-            View All Articles
-            <ArrowUpRight size={16} />
-          </Link>
-        </div>
-      </section>
-    </div>
+      <BlogPostContent post={post} />
+    </>
   );
 }

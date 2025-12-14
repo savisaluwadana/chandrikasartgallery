@@ -3,11 +3,37 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  images: { unoptimized: true },
-  
+
+  // Enable image optimization
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '*.cloudinary.com',
+        pathname: '/**',
+      },
+    ],
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+  },
+
+  // Enable compression
+  compress: true,
+
+  // Power performance with strict mode
+  reactStrictMode: true,
+
   // Headers for caching and security
   async headers() {
     return [
+      // Static assets - long cache
       {
         source: '/uploads/:path*',
         headers: [
@@ -17,6 +43,17 @@ const nextConfig = {
           },
         ],
       },
+      // Optimized images
+      {
+        source: '/_next/image/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      // API routes - no cache
       {
         source: '/api/:path*',
         headers: [
@@ -30,6 +67,7 @@ const nextConfig = {
           },
         ],
       },
+      // All pages - security headers
       {
         source: '/:path*',
         headers: [
@@ -49,12 +87,14 @@ const nextConfig = {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
           },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()',
+          },
         ],
       },
     ];
   },
-
-  // No redirects configured. The previous '/admin' -> '/admin' redirect caused an infinite loop.
 };
 
 module.exports = nextConfig;
