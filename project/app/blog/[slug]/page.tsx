@@ -1,10 +1,15 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { connectToDatabase } from '@/lib/mongodb';
-import { BlogPost } from '@/lib/models';
+import { BlogPost, IBlogPost } from '@/lib/models';
 import { generateBlogMetadata, siteConfig } from '@/lib/seo';
 import { generateBlogPostSchema, generateBreadcrumbSchema } from '@/lib/schema';
 import BlogPostContent from './BlogPostContent';
+
+// Type for populated blog post (author is an object, not ObjectId)
+interface PopulatedBlogPost extends Omit<IBlogPost, 'author'> {
+  author?: { name: string };
+}
 
 interface Props {
   params: { slug: string };
@@ -16,7 +21,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     await connectToDatabase();
     const post = await BlogPost.findOne({ slug: params.slug, status: 'published' })
       .populate('author', 'name')
-      .lean();
+      .lean<PopulatedBlogPost>();
 
     if (!post) {
       return { title: 'Post Not Found' };
@@ -41,7 +46,7 @@ async function getPost(slug: string) {
     await connectToDatabase();
     const post = await BlogPost.findOne({ slug, status: 'published' })
       .populate('author', 'name')
-      .lean();
+      .lean<PopulatedBlogPost>();
 
     if (post) {
       return JSON.parse(JSON.stringify(post));
