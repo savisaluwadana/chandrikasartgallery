@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { AuthNav } from '@/components/auth-nav';
+import { CartButton } from '@/components/cart-drawer';
 
 interface PageHeaderProps {
   title: string;
@@ -22,7 +23,8 @@ export function PageHeader({ title, backHref = '/', backLabel = 'Back' }: PageHe
           <span className="text-lg tracking-[0.2em] font-light uppercase text-white">
             {title}
           </span>
-          <div className="min-w-[80px] flex justify-end">
+          <div className="min-w-[80px] flex items-center justify-end gap-2">
+            <CartButton />
             <AuthNav />
           </div>
         </div>
