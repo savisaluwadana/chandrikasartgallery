@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Loader2, ArrowUpRight } from 'lucide-react';
+import { Loader2, ArrowUpRight, ArrowDown } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
+import { OptimizedImage } from '@/components/OptimizedImage';
+import { motion } from 'framer-motion';
 
 interface Product {
     _id: string;
@@ -19,10 +21,15 @@ interface ShopPageContentProps {
     initialProducts: Product[];
 }
 
+const ITEMS_PER_PAGE = 12;
+
 export default function ShopPageContent({ initialProducts }: ShopPageContentProps) {
     const [products, setProducts] = useState<Product[]>(initialProducts);
     const [loading, setLoading] = useState(initialProducts.length === 0);
     const [filter, setFilter] = useState('all');
+
+    // Pagination state
+    const [page, setPage] = useState(1);
 
     useEffect(() => {
         // Only fetch if no initial products were provided
@@ -46,6 +53,15 @@ export default function ShopPageContent({ initialProducts }: ShopPageContentProp
 
     const categories = ['all', ...Array.from(new Set(products.map(p => p.category)))];
     const filteredProducts = filter === 'all' ? products : products.filter(p => p.category === filter);
+
+    // Pagination logic
+    const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
+    const displayedProducts = filteredProducts.slice(0, page * ITEMS_PER_PAGE);
+
+    // Reset pagination when filter changes
+    useEffect(() => {
+        setPage(1);
+    }, [filter]);
 
     // Format price in LKR
     const formatPrice = (price: number) => {
@@ -86,8 +102,8 @@ export default function ShopPageContent({ initialProducts }: ShopPageContentProp
                                     key={cat}
                                     onClick={() => setFilter(cat)}
                                     className={`px-5 py-2 rounded-full text-sm transition-all ${filter === cat
-                                            ? 'bg-white text-black'
-                                            : 'border border-white/10 text-white/60 hover:border-white/20 hover:text-white'
+                                        ? 'bg-white text-black'
+                                        : 'border border-white/10 text-white/60 hover:border-white/20 hover:text-white'
                                         }`}
                                 >
                                     {cat.charAt(0).toUpperCase() + cat.slice(1)}
@@ -119,67 +135,92 @@ export default function ShopPageContent({ initialProducts }: ShopPageContentProp
                             </Link>
                         </div>
                     ) : (
-                        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                            {filteredProducts.map((product, idx) => (
-                                <Link key={product._id} href={`/shop/${product._id}`}>
-                                    <article className="group rounded-2xl border border-white/[0.05] hover:border-white/[0.1] overflow-hidden transition-all">
-                                        {/* Image */}
-                                        <div className="relative aspect-[4/5] bg-white/[0.02] overflow-hidden">
-                                            {product.images[0] ? (
-                                                <img
-                                                    src={product.images[0]}
-                                                    alt={product.title}
-                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                                                    loading="lazy"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center">
-                                                    <span className="text-4xl font-light text-white/10">CM</span>
-                                                </div>
-                                            )}
+                        <>
+                            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                                {displayedProducts.map((product, idx) => (
+                                    <motion.div
+                                        key={product._id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.5, delay: (idx % ITEMS_PER_PAGE) * 0.1 }}
+                                    >
+                                        <Link href={`/shop/${product._id}`}>
+                                            <article className="group rounded-2xl border border-white/[0.05] hover:border-white/[0.1] overflow-hidden transition-all h-full bg-[#0a0a0a]">
+                                                {/* Image */}
+                                                <div className="relative aspect-[4/5] bg-white/[0.02] overflow-hidden">
+                                                    {product.images[0] ? (
+                                                        <OptimizedImage
+                                                            src={product.images[0]}
+                                                            alt={product.title}
+                                                            fill
+                                                            className="group-hover:scale-105 transition-transform duration-700"
+                                                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center">
+                                                            <span className="text-4xl font-light text-white/10">CM</span>
+                                                        </div>
+                                                    )}
 
-                                            {/* Status Badge */}
-                                            {product.status === 'sold' && (
-                                                <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                                                    <span className="px-4 py-2 border border-white/20 text-white text-sm tracking-widest uppercase">
-                                                        Sold
+                                                    {/* Status Badge */}
+                                                    {product.status === 'sold' && (
+                                                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-10">
+                                                            <span className="px-4 py-2 border border-white/20 text-white text-sm tracking-widest uppercase">
+                                                                Sold
+                                                            </span>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Number */}
+                                                    <div className="absolute top-4 right-4 text-white/10 text-sm font-light z-10">
+                                                        {String(idx + 1).padStart(2, '0')}
+                                                    </div>
+                                                </div>
+
+                                                {/* Info */}
+                                                <div className="p-6">
+                                                    <span className="text-xs tracking-[0.2em] uppercase text-white/40 block mb-2">
+                                                        {product.category}
                                                     </span>
+                                                    <h3 className="text-lg font-light text-white mb-3 group-hover:text-white/80 transition-colors line-clamp-1">
+                                                        {product.title}
+                                                    </h3>
+                                                    <p className="text-sm text-white/40 line-clamp-2 mb-4 font-light">
+                                                        {product.description}
+                                                    </p>
+
+                                                    {/* Price & CTA */}
+                                                    <div className="flex items-center justify-between pt-4 border-t border-white/[0.05]">
+                                                        <span className="text-xl font-light text-white">
+                                                            {formatPrice(product.price)}
+                                                        </span>
+                                                        <span className="flex items-center gap-1 text-sm text-white/40 group-hover:text-white transition-colors">
+                                                            View
+                                                            <ArrowUpRight size={14} />
+                                                        </span>
+                                                    </div>
                                                 </div>
-                                            )}
+                                            </article>
+                                        </Link>
+                                    </motion.div>
+                                ))}
+                            </div>
 
-                                            {/* Number */}
-                                            <div className="absolute top-4 right-4 text-white/10 text-sm font-light">
-                                                {String(idx + 1).padStart(2, '0')}
-                                            </div>
+                            {/* Load More Button */}
+                            {page < totalPages && (
+                                <div className="mt-16 flex justify-center">
+                                    <button
+                                        onClick={() => setPage(p => p + 1)}
+                                        className="group flex flex-col items-center gap-2 text-white/40 hover:text-white transition-colors"
+                                    >
+                                        <span className="text-sm tracking-[0.2em] uppercase">Load More</span>
+                                        <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white/5 transition-all">
+                                            <ArrowDown size={16} className="animate-bounce" />
                                         </div>
-
-                                        {/* Info */}
-                                        <div className="p-6">
-                                            <span className="text-xs tracking-[0.2em] uppercase text-white/40 block mb-2">
-                                                {product.category}
-                                            </span>
-                                            <h3 className="text-lg font-light text-white mb-3 group-hover:text-white/80 transition-colors line-clamp-1">
-                                                {product.title}
-                                            </h3>
-                                            <p className="text-sm text-white/40 line-clamp-2 mb-4 font-light">
-                                                {product.description}
-                                            </p>
-
-                                            {/* Price & CTA */}
-                                            <div className="flex items-center justify-between pt-4 border-t border-white/[0.05]">
-                                                <span className="text-xl font-light text-white">
-                                                    {formatPrice(product.price)}
-                                                </span>
-                                                <span className="flex items-center gap-1 text-sm text-white/40 group-hover:text-white transition-colors">
-                                                    View
-                                                    <ArrowUpRight size={14} />
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </article>
-                                </Link>
-                            ))}
-                        </div>
+                                    </button>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             </section>

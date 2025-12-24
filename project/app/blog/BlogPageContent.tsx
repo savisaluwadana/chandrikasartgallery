@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Loader2, ArrowRight, ArrowUpRight, Clock } from 'lucide-react';
+import { Loader2, ArrowRight, ArrowUpRight, Clock, ArrowDown } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
+import { OptimizedImage } from '@/components/OptimizedImage';
+import { motion } from 'framer-motion';
 
 interface BlogPost {
     _id: string;
@@ -21,9 +23,14 @@ interface BlogPageContentProps {
     initialPosts: BlogPost[];
 }
 
+const POSTS_PER_PAGE = 6;
+
 export default function BlogPageContent({ initialPosts }: BlogPageContentProps) {
     const [posts, setPosts] = useState<BlogPost[]>(initialPosts);
     const [loading, setLoading] = useState(initialPosts.length === 0);
+
+    // Pagination state
+    const [page, setPage] = useState(1);
 
     useEffect(() => {
         // Only fetch if no initial posts were provided
@@ -44,6 +51,10 @@ export default function BlogPageContent({ initialPosts }: BlogPageContentProps) 
             fetchPosts();
         }
     }, [initialPosts.length]);
+
+    // Pagination logic
+    const totalPages = Math.ceil(posts.length / POSTS_PER_PAGE);
+    const displayedPosts = posts.slice(0, page * POSTS_PER_PAGE);
 
     const formatDate = (date: Date) => {
         return new Date(date).toLocaleDateString('en-US', {
@@ -100,65 +111,90 @@ export default function BlogPageContent({ initialPosts }: BlogPageContentProps) 
                             </Link>
                         </div>
                     ) : (
-                        <div className="space-y-1">
-                            {posts.map((post, idx) => (
-                                <Link key={post._id} href={`/blog/${post.slug}`}>
-                                    <article className="group py-10 border-b border-white/[0.05] hover:bg-white/[0.01] transition-all -mx-6 px-6 rounded-lg">
-                                        <div className="flex flex-col md:flex-row gap-8">
-                                            {/* Image */}
-                                            {post.featuredImage && (
-                                                <div className="w-full md:w-48 h-48 md:h-32 rounded-xl overflow-hidden flex-shrink-0 border border-white/[0.05]">
-                                                    <img
-                                                        src={post.featuredImage}
-                                                        alt={post.title}
-                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                                        loading="lazy"
-                                                    />
-                                                </div>
-                                            )}
-
-                                            {/* Content */}
-                                            <div className="flex-1 min-w-0">
-                                                {/* Meta */}
-                                                <div className="flex items-center gap-4 text-xs text-white/40 mb-4">
-                                                    {post.publishDate && (
-                                                        <span>{formatDate(post.publishDate)}</span>
+                        <>
+                            <div className="space-y-1">
+                                {displayedPosts.map((post, idx) => (
+                                    <motion.div
+                                        key={post._id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.5, delay: (idx % POSTS_PER_PAGE) * 0.1 }}
+                                    >
+                                        <Link href={`/blog/${post.slug}`}>
+                                            <article className="group py-10 border-b border-white/[0.05] hover:bg-white/[0.01] transition-all -mx-6 px-6 rounded-lg">
+                                                <div className="flex flex-col md:flex-row gap-8">
+                                                    {/* Image */}
+                                                    {post.featuredImage && (
+                                                        <div className="w-full md:w-48 h-48 md:h-32 rounded-xl overflow-hidden flex-shrink-0 border border-white/[0.05] relative bg-white/[0.02]">
+                                                            <OptimizedImage
+                                                                src={post.featuredImage}
+                                                                alt={post.title}
+                                                                fill
+                                                                className="group-hover:scale-105 transition-transform duration-500"
+                                                                sizes="(max-width: 768px) 100vw, 200px"
+                                                            />
+                                                        </div>
                                                     )}
-                                                    <span className="w-1 h-1 rounded-full bg-white/20" />
-                                                    <span className="flex items-center gap-1">
-                                                        <Clock size={12} />
-                                                        {readingTime(post.wordCount)} min read
-                                                    </span>
+
+                                                    {/* Content */}
+                                                    <div className="flex-1 min-w-0">
+                                                        {/* Meta */}
+                                                        <div className="flex items-center gap-4 text-xs text-white/40 mb-4">
+                                                            {post.publishDate && (
+                                                                <span>{formatDate(post.publishDate)}</span>
+                                                            )}
+                                                            <span className="w-1 h-1 rounded-full bg-white/20" />
+                                                            <span className="flex items-center gap-1">
+                                                                <Clock size={12} />
+                                                                {readingTime(post.wordCount)} min read
+                                                            </span>
+                                                        </div>
+
+                                                        {/* Title */}
+                                                        <h2 className="text-2xl font-light text-white mb-3 group-hover:text-white/80 transition-colors leading-snug">
+                                                            {post.title}
+                                                        </h2>
+
+                                                        {/* Excerpt */}
+                                                        <p className="text-white/40 text-sm leading-relaxed mb-4 line-clamp-2 font-light">
+                                                            {post.excerpt || post.content?.substring(0, 150)}...
+                                                        </p>
+
+                                                        {/* Read More */}
+                                                        <span className="inline-flex items-center gap-2 text-sm text-white/60 group-hover:text-white transition-colors">
+                                                            Read Article
+                                                            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                                                        </span>
+                                                    </div>
+
+                                                    {/* Number */}
+                                                    <div className="hidden lg:flex items-start">
+                                                        <span className="text-5xl font-extralight text-white/[0.05] group-hover:text-white/[0.1] transition-colors">
+                                                            {String(idx + 1).padStart(2, '0')}
+                                                        </span>
+                                                    </div>
                                                 </div>
+                                            </article>
+                                        </Link>
+                                    </motion.div>
+                                ))}
+                            </div>
 
-                                                {/* Title */}
-                                                <h2 className="text-2xl font-light text-white mb-3 group-hover:text-white/80 transition-colors leading-snug">
-                                                    {post.title}
-                                                </h2>
-
-                                                {/* Excerpt */}
-                                                <p className="text-white/40 text-sm leading-relaxed mb-4 line-clamp-2 font-light">
-                                                    {post.excerpt || post.content?.substring(0, 150)}...
-                                                </p>
-
-                                                {/* Read More */}
-                                                <span className="inline-flex items-center gap-2 text-sm text-white/60 group-hover:text-white transition-colors">
-                                                    Read Article
-                                                    <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
-                                                </span>
-                                            </div>
-
-                                            {/* Number */}
-                                            <div className="hidden lg:flex items-start">
-                                                <span className="text-5xl font-extralight text-white/[0.05] group-hover:text-white/[0.1] transition-colors">
-                                                    {String(idx + 1).padStart(2, '0')}
-                                                </span>
-                                            </div>
+                            {/* Load More Button */}
+                            {page < totalPages && (
+                                <div className="mt-16 flex justify-center">
+                                    <button
+                                        onClick={() => setPage(p => p + 1)}
+                                        className="group flex flex-col items-center gap-2 text-white/40 hover:text-white transition-colors"
+                                    >
+                                        <span className="text-sm tracking-[0.2em] uppercase">Load More</span>
+                                        <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white/5 transition-all">
+                                            <ArrowDown size={16} className="animate-bounce" />
                                         </div>
-                                    </article>
-                                </Link>
-                            ))}
-                        </div>
+                                    </button>
+                                </div>
+                            )}
+                        </>
                     )}
                 </div>
             </section>
