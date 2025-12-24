@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Loader2, Check, ArrowUpRight } from 'lucide-react';
+import { Loader2, Check, ArrowUpRight, ShoppingBag, Share2, Copy, CheckCircle } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
+import { useCart } from '@/lib/cart-context';
 
 interface Product {
     _id: string;
@@ -27,6 +28,9 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
     const [orderMessage, setOrderMessage] = useState('');
     const [orderSubmitting, setOrderSubmitting] = useState(false);
     const [orderSuccess, setOrderSuccess] = useState(false);
+    const [copied, setCopied] = useState(false);
+    const [addedToCart, setAddedToCart] = useState(false);
+    const { addItem } = useCart();
 
     // Format price in LKR
     const formatPrice = (price: number) => {
@@ -62,6 +66,28 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
         }
     };
 
+    const handleAddToCart = () => {
+        addItem({
+            id: product._id,
+            title: product.title,
+            price: product.price,
+            image: product.images?.[0] || '',
+        });
+        setAddedToCart(true);
+        setTimeout(() => setAddedToCart(false), 2000);
+    };
+
+    const handleShare = async () => {
+        const url = typeof window !== 'undefined' ? window.location.href : '';
+        try {
+            await navigator.clipboard.writeText(url);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            console.error('Failed to copy:', err);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-[#0a0a0a]">
             {/* Navigation */}
@@ -94,8 +120,8 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                                             key={idx}
                                             onClick={() => setMainImage(img)}
                                             className={`h-20 w-20 rounded-xl overflow-hidden border-2 transition-all flex-shrink-0 ${mainImage === img
-                                                    ? 'border-white'
-                                                    : 'border-white/[0.05] hover:border-white/20'
+                                                ? 'border-white'
+                                                : 'border-white/[0.05] hover:border-white/20'
                                                 }`}
                                         >
                                             <img
@@ -126,14 +152,47 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                                         {formatPrice(product.price)}
                                     </span>
                                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs ${product.status === 'available'
-                                            ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                                            : 'bg-white/5 text-white/40 border border-white/10'
+                                        ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                                        : 'bg-white/5 text-white/40 border border-white/10'
                                         }`}>
                                         <span className={`w-1.5 h-1.5 rounded-full ${product.status === 'available' ? 'bg-emerald-400' : 'bg-white/40'}`} />
                                         {product.status === 'available' ? 'Available' : 'Sold'}
                                     </span>
                                 </div>
                             </div>
+
+                            {/* Add to Cart & Share */}
+                            {product.status === 'available' && (
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={handleAddToCart}
+                                        disabled={addedToCart}
+                                        className={`flex-1 px-6 py-4 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${addedToCart
+                                            ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                                            : 'bg-white text-black hover:bg-white/90'
+                                            }`}
+                                    >
+                                        {addedToCart ? (
+                                            <>
+                                                <CheckCircle className="w-5 h-5" />
+                                                Added to Cart
+                                            </>
+                                        ) : (
+                                            <>
+                                                <ShoppingBag className="w-5 h-5" />
+                                                Add to Cart
+                                            </>
+                                        )}
+                                    </button>
+                                    <button
+                                        onClick={handleShare}
+                                        className="px-4 py-4 rounded-xl border border-white/10 text-white/60 hover:bg-white/5 hover:text-white transition-all"
+                                        title="Copy link"
+                                    >
+                                        {copied ? <Check className="w-5 h-5 text-emerald-400" /> : <Share2 className="w-5 h-5" />}
+                                    </button>
+                                </div>
+                            )}
 
                             {/* Description */}
                             <div className="border-t border-white/[0.05] pt-8">

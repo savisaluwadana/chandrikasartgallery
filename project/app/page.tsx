@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ArrowRight, ArrowUpRight, Menu, X, ChevronDown } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Menu, X, ChevronDown, Loader2, CheckCircle } from 'lucide-react';
 import { AuthNav, AuthNavMobile } from '@/components/auth-nav';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 
@@ -41,7 +41,7 @@ export default function Home() {
       transition: {
         delay: i * 0.1,
         duration: 0.8,
-        ease: [0.215, 0.61, 0.355, 1],
+        ease: [0.215, 0.61, 0.355, 1] as const,
       },
     }),
   };
@@ -96,24 +96,56 @@ export default function Home() {
         <AnimatePresence>
           {menuOpen && (
             <motion.div
-              initial={{ opacity: 0, y: "-100%" }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: "-100%" }}
-              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="md:hidden fixed inset-0 bg-[#050505] z-40 flex flex-col justify-center items-center gap-8"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className="md:hidden fixed inset-0 bg-[#050505] z-40 flex flex-col"
             >
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMenuOpen(false)}
-                  className="text-4xl font-light tracking-wide hover:text-white/60 transition-colors"
-                >
-                  {link.label}
+              {/* Mobile Menu Header with Logo */}
+              <div className="flex items-center justify-between h-24 px-6">
+                <Link href="/" onClick={() => setMenuOpen(false)} className="group">
+                  <div className="flex flex-col">
+                    <span className="text-xl tracking-[0.2em] font-light uppercase group-hover:opacity-70 transition-opacity">
+                      Chandrika <span className="font-medium">Maelge</span>
+                    </span>
+                    <span className="text-[10px] tracking-[0.4em] text-white/40 uppercase mt-1">Fine Art</span>
+                  </div>
                 </Link>
-              ))}
-              <div className="mt-8">
-                <AuthNavMobile onClose={() => setMenuOpen(false)} />
+                <button
+                  onClick={() => setMenuOpen(false)}
+                  className="p-2 hover:bg-white/5 rounded-full transition-colors"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+
+              {/* Mobile Menu Links */}
+              <div className="flex-1 flex flex-col justify-center items-center gap-8">
+                {navLinks.map((link, index) => (
+                  <motion.div
+                    key={link.href}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1, duration: 0.3 }}
+                  >
+                    <Link
+                      href={link.href}
+                      onClick={() => setMenuOpen(false)}
+                      className="text-4xl font-light tracking-wide hover:text-white/60 transition-colors"
+                    >
+                      {link.label}
+                    </Link>
+                  </motion.div>
+                ))}
+                <motion.div
+                  className="mt-8"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4, duration: 0.3 }}
+                >
+                  <AuthNavMobile onClose={() => setMenuOpen(false)} />
+                </motion.div>
               </div>
             </motion.div>
           )}
@@ -333,29 +365,7 @@ export default function Home() {
       </section>
 
       {/* Newsletter CTA */}
-      <section className="py-40 px-6 lg:px-12 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white/[0.02]" />
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <span className="text-xs tracking-[0.3em] uppercase text-white/40 mb-8 block">Join the Circle</span>
-          <h2 className="text-6xl md:text-8xl font-light mb-12 tracking-tight">
-            Stay <span className="font-serif italic text-white/80">Inspired</span>
-          </h2>
-          <p className="text-white/40 text-xl max-w-xl mx-auto mb-16 font-light leading-relaxed">
-            Receive exclusive previews of new collections, behind-the-scenes content,
-            and invitations to private viewings.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <input
-              type="email"
-              placeholder="Enter your email address"
-              className="w-full sm:w-96 px-8 py-5 bg-white/5 border border-white/10 rounded-full text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-colors"
-            />
-            <button className="w-full sm:w-auto px-10 py-5 bg-white text-black rounded-full font-medium hover:bg-white/90 transition-all">
-              Subscribe
-            </button>
-          </div>
-        </div>
-      </section>
+      <NewsletterSection />
 
       {/* Footer */}
       <footer className="border-t border-white/[0.05] py-24 px-6 lg:px-12 bg-[#020202]">
@@ -378,10 +388,15 @@ export default function Home() {
             <div className="lg:col-span-2 lg:col-start-7">
               <h4 className="text-xs tracking-[0.2em] uppercase text-white/40 mb-8">Explore</h4>
               <ul className="space-y-4">
-                {['Gallery', 'Collection', 'Journal', 'About'].map((item) => (
-                  <li key={item}>
-                    <Link href={`/${item.toLowerCase()}`} className="text-white/50 hover:text-white transition-colors font-light">
-                      {item}
+                {[
+                  { label: 'Gallery', href: '/gallery' },
+                  { label: 'Collection', href: '/shop' },
+                  { label: 'Journal', href: '/blog' },
+                  { label: 'About', href: '/about' },
+                ].map((item) => (
+                  <li key={item.label}>
+                    <Link href={item.href} className="text-white/50 hover:text-white transition-colors font-light">
+                      {item.label}
                     </Link>
                   </li>
                 ))}
@@ -392,13 +407,19 @@ export default function Home() {
             <div className="lg:col-span-2">
               <h4 className="text-xs tracking-[0.2em] uppercase text-white/40 mb-8">Connect</h4>
               <ul className="space-y-4">
-                {['Subscribe', 'Contact', 'Instagram', 'Studio'].map((item) => (
-                  <li key={item}>
+                {[
+                  { label: 'Subscribe', href: '/subscribe' },
+                  { label: 'Contact', href: '/contact' },
+                  { label: 'Instagram', href: 'https://instagram.com' },
+                  { label: 'Studio', href: '/admin' },
+                ].map((item) => (
+                  <li key={item.label}>
                     <Link
-                      href={item === 'Studio' ? '/admin' : item === 'Subscribe' ? '/subscribe' : '#'}
+                      href={item.href}
                       className="text-white/50 hover:text-white transition-colors font-light"
+                      {...(item.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                     >
-                      {item}
+                      {item.label}
                     </Link>
                   </li>
                 ))}
@@ -409,10 +430,13 @@ export default function Home() {
             <div className="lg:col-span-2">
               <h4 className="text-xs tracking-[0.2em] uppercase text-white/40 mb-8">Legal</h4>
               <ul className="space-y-4">
-                {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map((item) => (
-                  <li key={item}>
-                    <Link href="#" className="text-white/50 hover:text-white transition-colors font-light">
-                      {item}
+                {[
+                  { label: 'Privacy Policy', href: '/privacy' },
+                  { label: 'Terms of Service', href: '/terms' },
+                ].map((item) => (
+                  <li key={item.label}>
+                    <Link href={item.href} className="text-white/50 hover:text-white transition-colors font-light">
+                      {item.label}
                     </Link>
                   </li>
                 ))}
@@ -423,7 +447,7 @@ export default function Home() {
           {/* Bottom */}
           <div className="pt-8 border-t border-white/[0.05] flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-white/20 text-xs font-light tracking-wide">
-              © 2024 CHANDRIKA MAELGE ART. ALL RIGHTS RESERVED.
+              © {new Date().getFullYear()} CHANDRIKA MAELGE ART. ALL RIGHTS RESERVED.
             </p>
             <p className="text-white/20 text-xs font-light tracking-wide">
               DESIGNED WITH PASSION
@@ -432,5 +456,94 @@ export default function Home() {
         </div>
       </footer>
     </div>
+  );
+}
+
+// Newsletter Section Component with form functionality
+function NewsletterSection() {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) return;
+
+    setError('');
+    setLoading(true);
+
+    try {
+      const res = await fetch('/api/subscribers/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to subscribe');
+      }
+
+      setSuccess(true);
+      setEmail('');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error subscribing');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <section className="py-40 px-6 lg:px-12 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white/[0.02]" />
+      <div className="max-w-4xl mx-auto text-center relative z-10">
+        <span className="text-xs tracking-[0.3em] uppercase text-white/40 mb-8 block">Join the Circle</span>
+        <h2 className="text-6xl md:text-8xl font-light mb-12 tracking-tight">
+          Stay <span className="font-serif italic text-white/80">Inspired</span>
+        </h2>
+        <p className="text-white/40 text-xl max-w-xl mx-auto mb-16 font-light leading-relaxed">
+          Receive exclusive previews of new collections, behind-the-scenes content,
+          and invitations to private viewings.
+        </p>
+
+        {success ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col items-center gap-4"
+          >
+            <div className="w-16 h-16 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+              <CheckCircle className="w-8 h-8 text-emerald-400" />
+            </div>
+            <p className="text-white/60 text-lg">Welcome to the circle! Check your inbox.</p>
+          </motion.div>
+        ) : (
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email address"
+              required
+              disabled={loading}
+              className="w-full sm:w-96 px-8 py-5 bg-white/5 border border-white/10 rounded-full text-white placeholder:text-white/20 focus:outline-none focus:border-white/30 transition-colors disabled:opacity-50"
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full sm:w-auto px-10 py-5 bg-white text-black rounded-full font-medium hover:bg-white/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {loading && <Loader2 className="w-5 h-5 animate-spin" />}
+              {loading ? 'Subscribing...' : 'Subscribe'}
+            </button>
+          </form>
+        )}
+
+        {error && (
+          <p className="text-red-400 mt-4 text-sm">{error}</p>
+        )}
+      </div>
+    </section>
   );
 }
