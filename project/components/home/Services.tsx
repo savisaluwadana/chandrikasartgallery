@@ -46,11 +46,11 @@ export function Services() {
                             link: '/blog',
                         },
                     ].map((item, idx) => (
-                        <Link key={idx} href={item.link} className="group relative bg-white p-12 h-96 flex flex-col justify-between hover:bg-gray-100 transition-colors">
+                        <Link key={idx} href={item.link} className="group relative bg-white p-12 h-96 flex flex-col justify-between hover:bg-black transition-colors duration-500">
                             <div>
-                                <span className="text-6xl font-serif italic text-black/5 block mb-8 group-hover:text-[#6CD8D1]/40 transition-colors">0{idx + 1}</span>
-                                <h3 className="text-2xl font-light mb-4 group-hover:text-[#6CD8D1] transition-colors">{item.title}</h3>
-                                <p className="text-black/40 text-sm leading-relaxed font-light max-w-[200px]">{item.description}</p>
+                                <span className="text-6xl font-serif italic text-black/5 block mb-8 group-hover:text-white/20 transition-colors">0{idx + 1}</span>
+                                <h3 className="text-2xl font-light mb-4 text-black group-hover:text-white transition-colors">{item.title}</h3>
+                                <p className="text-black/40 text-sm leading-relaxed font-light max-w-[200px] group-hover:text-white/60 transition-colors">{item.description}</p>
                             </div>
                             <div className="flex justify-end">
                                 <ArrowUpRight size={24} className="text-black/20 group-hover:text-[#6CD8D1] group-hover:translate-x-1 group-hover:-translate-y-1 transition-all" />

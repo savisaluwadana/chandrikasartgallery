@@ -32,8 +32,8 @@ export function Hero() {
         <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
             {/* Background Elements */}
             <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
-                <div className="absolute top-1/4 left-1/4 w-[800px] h-[800px] bg-gradient-to-r from-[#6CD8D1]/10 to-blue-500/10 rounded-full blur-[120px] opacity-40" />
-                <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-gradient-to-r from-[#6CD8D1]/10 to-teal-500/10 rounded-full blur-[120px] opacity-40" />
+                <div className="absolute top-1/4 left-1/4 w-[800px] h-[800px] bg-gradient-to-r from-[#6CD8D1]/30 to-blue-500/30 rounded-full blur-[120px] opacity-60" />
+                <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-gradient-to-r from-[#6CD8D1]/30 to-teal-500/30 rounded-full blur-[120px] opacity-60" />
                 <div className="absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-multiply" />
             </motion.div>
 

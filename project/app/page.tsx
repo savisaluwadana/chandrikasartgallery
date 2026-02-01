@@ -20,6 +20,9 @@ const Services = dynamic(() => import('@/components/home/Services').then(mod => 
 const Newsletter = dynamic(() => import('@/components/home/Newsletter').then(mod => mod.Newsletter), {
   loading: () => <div className="h-96 w-full bg-gray-50" />
 });
+const ShopCategories = dynamic(() => import('@/components/home/ShopCategories').then(mod => mod.ShopCategories), {
+  loading: () => <div className="h-96 w-full bg-white" />
+});
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -147,6 +150,7 @@ export default function Home() {
 
       <Hero />
       <Featured />
+      <ShopCategories />
       <Services />
       <Newsletter />
       <Footer />
