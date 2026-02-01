@@ -39,8 +39,13 @@ export function Newsletter() {
     };
 
     return (
-        <section className="py-40 px-6 lg:px-12 relative overflow-hidden bg-[#6CD8D1]">
-            <div className="absolute inset-0 bg-gradient-to-br from-black/5 to-transparent" />
+        <section className="py-40 px-6 lg:px-12 relative overflow-hidden bg-gradient-to-br from-[#6CD8D1] via-blue-500 to-purple-600">
+            <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay" />
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-t from-black/20 to-transparent" />
+
+            {/* Ambient Orbs */}
+            <div className="absolute top-[-50%] left-[-20%] w-[1000px] h-[1000px] bg-white/10 rounded-full blur-[150px] mix-blend-overlay" />
+            <div className="absolute bottom-[-50%] right-[-20%] w-[1000px] h-[1000px] bg-purple-900/40 rounded-full blur-[150px] mix-blend-multiply" />
             <div className="max-w-4xl mx-auto text-center relative z-10">
                 <span className="text-xs tracking-[0.3em] uppercase text-white/60 mb-8 block">Join the Circle</span>
                 <h2 className="text-6xl md:text-8xl font-light mb-12 tracking-tight text-white">
