@@ -13,17 +13,17 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, backHref = '/', backLabel = 'Back' }: PageHeaderProps) {
   return (
-    <nav className="fixed top-0 w-full z-40 bg-black/80 backdrop-blur-xl border-b border-white/[0.05]">
+    <nav className="fixed top-0 w-full z-40 bg-white/80 backdrop-blur-xl border-b border-black/[0.05]">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="flex items-center justify-between h-20">
-          <Link href={backHref} className="flex items-center gap-3 text-white/60 hover:text-white transition-colors">
+          <Link href={backHref} className="flex items-center gap-3 text-black/60 hover:text-black transition-colors">
             <ArrowLeft size={18} />
             <span className="text-sm tracking-wide">{backLabel}</span>
           </Link>
-          <span className="text-lg tracking-[0.2em] font-light uppercase text-white">
+          <span className="text-lg tracking-[0.2em] font-light uppercase text-black">
             {title}
           </span>
-          <div className="min-w-[80px] flex items-center justify-end gap-2">
+          <div className="min-w-[80px] flex items-center justify-end gap-2 text-black">
             <CartButton />
             <AuthNav />
           </div>
