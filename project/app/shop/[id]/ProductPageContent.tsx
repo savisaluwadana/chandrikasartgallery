@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { Loader2, Check, ArrowUpRight, ShoppingBag, Share2, Copy, CheckCircle } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
 import { useCart } from '@/lib/cart-context';
+import { ViewInRoomModal } from '@/components/shop/view-in-room-modal';
+import { ImageZoom } from '@/components/ui/image-zoom';
 
 interface Variant {
     type: string;
@@ -33,6 +35,7 @@ interface ProductPageContentProps {
 export default function ProductPageContent({ product }: ProductPageContentProps) {
     const [mainImage, setMainImage] = useState(product.images?.[0] || '');
     const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
+    const [viewInRoomOpen, setViewInRoomOpen] = useState(false);
 
     // Order Form State
     const [orderName, setOrderName] = useState('');
@@ -120,13 +123,18 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                     <div className="grid lg:grid-cols-2 gap-12 lg:gap-20">
                         {/* Images */}
                         <div className="space-y-4">
-                            <div className="aspect-[4/5] rounded-2xl overflow-hidden border border-black/[0.05] bg-black/[0.02]">
+                            <div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-black/[0.02]">
                                 {mainImage ? (
-                                    <img
-                                        src={mainImage}
-                                        alt={product.title}
-                                        className="w-full h-full object-cover"
-                                    />
+                                    <>
+                                        <ImageZoom src={mainImage} alt={product.title} />
+                                        <button
+                                            onClick={() => setViewInRoomOpen(true)}
+                                            className="absolute bottom-4 right-4 px-4 py-2 bg-white/90 backdrop-blur-md text-black text-sm font-medium rounded-full shadow-sm hover:scale-105 transition-transform flex items-center gap-2 z-20"
+                                        >
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 3v18h18" /><path d="M9 3v18" /><path d="M15 9h6" /><path d="M21 3l-6 6" /></svg>
+                                            View in Room
+                                        </button>
+                                    </>
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center">
                                         <span className="text-6xl font-light text-black/10">CM</span>
@@ -197,7 +205,7 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                                                 }`}
                                         >
                                             <div className="flex justify-between items-center mb-1">
-                                                <span className="font-medium text-black">Original Artwork</span>
+                                                <span className="font-medium text-black">Original Painting</span>
                                                 <span className="text-black">{formatPrice(product.price)}</span>
                                             </div>
                                             <div className="text-sm text-black/60">
@@ -251,7 +259,7 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                                         ) : (
                                             <>
                                                 <ShoppingBag className="w-5 h-5" />
-                                                Add {selectedVariant ? selectedVariant.type : 'Original'} to Cart
+                                                Add {selectedVariant ? selectedVariant.type : 'Original Painting'} to Cart
                                             </>
                                         )}
                                     </button>
@@ -360,6 +368,12 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                     </Link>
                 </div>
             </section>
+
+            <ViewInRoomModal
+                isOpen={viewInRoomOpen}
+                onClose={() => setViewInRoomOpen(false)}
+                image={mainImage}
+            />
         </div>
     );
 }
