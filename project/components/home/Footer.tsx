@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export function Footer() {
     return (
-        <footer className="border-t border-white/[0.05] py-24 px-6 lg:px-12 bg-[#020202]">
+        <footer className="border-t border-black/[0.05] py-24 px-6 lg:px-12 bg-gray-50">
             <div className="max-w-[1800px] mx-auto">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-16 mb-24">
                     {/* Brand */}
@@ -14,7 +14,7 @@ export function Footer() {
                                 Chandrika <span className="font-medium">Maelge</span>
                             </span>
                         </Link>
-                        <p className="text-white/30 text-lg max-w-sm leading-relaxed font-light">
+                        <p className="text-black/30 text-lg max-w-sm leading-relaxed font-light">
                             Creating art that speaks to the soul. Based in Sri Lanka,
                             exhibited worldwide.
                         </p>
@@ -22,16 +22,16 @@ export function Footer() {
 
                     {/* Links */}
                     <div className="lg:col-span-2 lg:col-start-7">
-                        <h4 className="text-xs tracking-[0.2em] uppercase text-white/40 mb-8">Explore</h4>
+                        <h4 className="text-xs tracking-[0.2em] uppercase text-black/40 mb-8">Explore</h4>
                         <ul className="space-y-4">
                             {[
-                                { label: 'Gallery', href: '/gallery' },
-                                { label: 'Collection', href: '/shop' },
+                                { label: 'Gift Shop', href: '/shop' },
+
                                 { label: 'Journal', href: '/blog' },
                                 { label: 'About', href: '/about' },
                             ].map((item) => (
                                 <li key={item.label}>
-                                    <Link href={item.href} className="text-white/50 hover:text-white transition-colors font-light">
+                                    <Link href={item.href} className="text-black/50 hover:text-black transition-colors font-light">
                                         {item.label}
                                     </Link>
                                 </li>
@@ -41,7 +41,7 @@ export function Footer() {
 
                     {/* Connect */}
                     <div className="lg:col-span-2">
-                        <h4 className="text-xs tracking-[0.2em] uppercase text-white/40 mb-8">Connect</h4>
+                        <h4 className="text-xs tracking-[0.2em] uppercase text-black/40 mb-8">Connect</h4>
                         <ul className="space-y-4">
                             {[
                                 { label: 'Subscribe', href: '/subscribe' },
@@ -52,7 +52,7 @@ export function Footer() {
                                 <li key={item.label}>
                                     <Link
                                         href={item.href}
-                                        className="text-white/50 hover:text-white transition-colors font-light"
+                                        className="text-black/50 hover:text-black transition-colors font-light"
                                         {...(item.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
                                     >
                                         {item.label}
@@ -64,14 +64,14 @@ export function Footer() {
 
                     {/* Legal */}
                     <div className="lg:col-span-2">
-                        <h4 className="text-xs tracking-[0.2em] uppercase text-white/40 mb-8">Legal</h4>
+                        <h4 className="text-xs tracking-[0.2em] uppercase text-black/40 mb-8">Legal</h4>
                         <ul className="space-y-4">
                             {[
                                 { label: 'Privacy Policy', href: '/privacy' },
                                 { label: 'Terms of Service', href: '/terms' },
                             ].map((item) => (
                                 <li key={item.label}>
-                                    <Link href={item.href} className="text-white/50 hover:text-white transition-colors font-light">
+                                    <Link href={item.href} className="text-black/50 hover:text-black transition-colors font-light">
                                         {item.label}
                                     </Link>
                                 </li>
@@ -81,11 +81,11 @@ export function Footer() {
                 </div>
 
                 {/* Bottom */}
-                <div className="pt-8 border-t border-white/[0.05] flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p className="text-white/20 text-xs font-light tracking-wide">
+                <div className="pt-8 border-t border-black/[0.05] flex flex-col md:flex-row justify-between items-center gap-4">
+                    <p className="text-black/20 text-xs font-light tracking-wide">
                         © {new Date().getFullYear()} CHANDRIKA MAELGE ART. ALL RIGHTS RESERVED.
                     </p>
-                    <p className="text-white/20 text-xs font-light tracking-wide">
+                    <p className="text-black/20 text-xs font-light tracking-wide">
                         DESIGNED WITH PASSION
                     </p>
                 </div>
