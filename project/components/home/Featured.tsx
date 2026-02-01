@@ -63,7 +63,7 @@ export function Featured() {
                         transition={{ duration: 0.8 }}
                         className="lg:col-span-7 relative aspect-[4/3] bg-gray-100 rounded-sm overflow-hidden group"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-br from-black/[0.05] to-transparent opacity-50" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#6CD8D1]/20 to-transparent opacity-50 mix-blend-multiply" />
                         <div className="absolute inset-0 flex items-center justify-center">
                             <div className="text-center transform group-hover:scale-105 transition-transform duration-700">
                                 <div className="w-32 h-32 rounded-full border border-white/10 flex items-center justify-center mx-auto mb-6 backdrop-blur-sm">

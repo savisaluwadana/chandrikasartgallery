@@ -23,6 +23,9 @@ const Newsletter = dynamic(() => import('@/components/home/Newsletter').then(mod
 const ShopCategories = dynamic(() => import('@/components/home/ShopCategories').then(mod => mod.ShopCategories), {
   loading: () => <div className="h-96 w-full bg-white" />
 });
+const Marquee = dynamic(() => import('@/components/home/Marquee').then(mod => mod.Marquee), {
+  loading: () => <div className="h-24 w-full bg-white" />
+});
 
 export default function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -49,7 +52,7 @@ export default function Home() {
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-        className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrolled ? 'bg-white/80 backdrop-blur-md border-b border-black/[0.05]' : 'bg-transparent'}`}
+        className={`fixed top-0 w-full z-50 transition-all duration-500 ${scrolled ? 'bg-white/70 backdrop-blur-xl border-b border-[#6CD8D1]/20 shadow-sm' : 'bg-transparent'}`}
       >
         <div className="max-w-[1800px] mx-auto px-6 lg:px-12">
           <div className="flex items-center justify-between h-24">
@@ -149,6 +152,7 @@ export default function Home() {
       </motion.nav>
 
       <Hero />
+      <Marquee />
       <Featured />
       <ShopCategories />
       <Services />
