@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google';
 import { defaultMetadata } from '@/lib/seo';
 import { generateOrganizationSchema, generateWebsiteSchema, generateLocalBusinessSchema } from '@/lib/schema';
 import { Providers } from './providers';
+import { NoiseOverlay } from '@/components/ui/noise-overlay';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -57,6 +58,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} bg-white antialiased`}>
+        <NoiseOverlay />
         <Providers>{children}</Providers>
       </body>
     </html>

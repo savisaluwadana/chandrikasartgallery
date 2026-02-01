@@ -5,6 +5,7 @@ import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { Menu, X } from 'lucide-react';
 import { AuthNav, AuthNavMobile } from '@/components/auth-nav';
+import { CartButton } from '@/components/cart-drawer';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import { Hero } from '@/components/home/Hero';
@@ -41,6 +42,8 @@ export default function Home() {
 
   const navLinks = [
     { href: '/shop', label: 'Gift Shop' },
+    { href: '/about', label: 'About' },
+    { href: '/contact', label: 'Contact' },
     { href: '/blog', label: 'Journal' },
     { href: '/subscribe', label: 'Subscribe' },
   ];
@@ -78,6 +81,7 @@ export default function Home() {
                   <span className="absolute bottom-0 left-0 w-full h-[1px] bg-black transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out" />
                 </Link>
               ))}
+              <CartButton />
               <AuthNav />
             </div>
 
