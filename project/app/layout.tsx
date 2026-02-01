@@ -5,6 +5,7 @@ import { defaultMetadata } from '@/lib/seo';
 import { generateOrganizationSchema, generateWebsiteSchema, generateLocalBusinessSchema } from '@/lib/schema';
 import { Providers } from './providers';
 import { NoiseOverlay } from '@/components/ui/noise-overlay';
+import { ScrollProgress } from '@/components/ui/scroll-progress';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -58,6 +59,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} bg-white antialiased`}>
+        <ScrollProgress />
         <NoiseOverlay />
         <Providers>{children}</Providers>
       </body>
