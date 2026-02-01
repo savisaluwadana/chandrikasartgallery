@@ -27,6 +27,7 @@ export default function ShopPageContent({ initialProducts }: ShopPageContentProp
     const [products, setProducts] = useState<Product[]>(initialProducts);
     const [loading, setLoading] = useState(initialProducts.length === 0);
     const [filter, setFilter] = useState('all');
+    const [typeFilter, setTypeFilter] = useState('all'); // 'all', 'original', 'print'
 
     // Pagination state
     const [page, setPage] = useState(1);
@@ -52,7 +53,18 @@ export default function ShopPageContent({ initialProducts }: ShopPageContentProp
     }, [initialProducts.length]);
 
     const categories = ['all', ...Array.from(new Set(products.map(p => p.category)))];
-    const filteredProducts = filter === 'all' ? products : products.filter(p => p.category === filter);
+
+    // Filter by Category AND Type
+    const filteredProducts = products.filter(p => {
+        const matchesCategory = filter === 'all' || p.category === filter;
+        const matchesType = typeFilter === 'all'
+            ? true
+            : typeFilter === 'original'
+                ? p.category.toLowerCase().includes('original') || !p.category.toLowerCase().includes('print') // Simple heuristic if no type field
+                : p.category.toLowerCase().includes('print');
+
+        return matchesCategory && matchesType;
+    });
 
     // Pagination logic
     const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
@@ -69,67 +81,90 @@ export default function ShopPageContent({ initialProducts }: ShopPageContentProp
     };
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a]">
+        <div className="min-h-screen bg-white">
             {/* Navigation */}
-            <PageHeader title="Collection" />
+            <PageHeader title="Gift Shop" />
 
             {/* Hero Header */}
-            <section className="pt-32 pb-20 px-6 lg:px-12 relative overflow-hidden">
+            <section className="pt-32 pb-20 px-6 lg:px-12 relative overflow-hidden bg-[#6CD8D1] rounded-b-[2rem] mb-12">
                 <div className="absolute inset-0">
-                    <div className="absolute top-1/4 right-1/3 w-[500px] h-[500px] bg-gradient-to-r from-emerald-500/5 to-teal-500/5 rounded-full blur-3xl" />
+                    <div className="absolute top-1/4 right-1/3 w-[500px] h-[500px] bg-white/20 rounded-full blur-3xl opacity-50" />
                 </div>
                 <div className="max-w-7xl mx-auto relative z-10">
                     <div className="inline-flex items-center gap-3 mb-6">
-                        <div className="w-12 h-[1px] bg-gradient-to-r from-transparent to-white/40" />
-                        <span className="text-xs tracking-[0.3em] uppercase text-white/40">Available Works</span>
+                        <div className="w-12 h-[1px] bg-black/40" />
+                        <span className="text-xs tracking-[0.3em] uppercase text-black/60">Available Works</span>
                     </div>
-                    <h1 className="text-5xl md:text-7xl font-extralight text-white mb-6">
-                        The <span className="font-medium">Collection</span>
+                    <h1 className="text-5xl md:text-7xl font-extralight text-black mb-6">
+                        The <span className="font-medium text-black">Gift Shop</span>
                     </h1>
-                    <p className="text-lg text-white/40 max-w-xl font-light">
+                    <p className="text-lg text-black/40 max-w-xl font-light">
                         Original artworks and limited edition prints available for collectors and art enthusiasts.
                     </p>
                 </div>
             </section>
 
             {/* Filter Tabs */}
-            {categories.length > 1 && (
-                <div className="px-6 lg:px-12 pb-12">
-                    <div className="max-w-7xl mx-auto">
-                        <div className="flex flex-wrap gap-3">
+            <div className="px-6 lg:px-12 pb-12">
+                <div className="max-w-7xl mx-auto space-y-8">
+                    {/* Type Filter */}
+                    <div className="flex justify-center border-b border-black/[0.1] pb-8">
+                        <div className="flex gap-8">
+                            {['all', 'original', 'print'].map((type) => (
+                                <button
+                                    key={type}
+                                    onClick={() => setTypeFilter(type)}
+                                    className={`text-sm tracking-[0.2em] uppercase transition-colors relative pb-2 ${typeFilter === type ? 'text-black' : 'text-black/40 hover:text-black'
+                                        }`}
+                                >
+                                    {type === 'all' ? 'View All' : type === 'original' ? 'Original Paintings' : 'Canvas & Prints'}
+                                    {typeFilter === type && (
+                                        <motion.div
+                                            layoutId="activeFilter"
+                                            className="absolute bottom-0 left-0 w-full h-[1px] bg-black"
+                                        />
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Category Filter */}
+                    {categories.length > 1 && (
+                        <div className="flex flex-wrap gap-3 justify-center">
                             {categories.map((cat) => (
                                 <button
                                     key={cat}
                                     onClick={() => setFilter(cat)}
                                     className={`px-5 py-2 rounded-full text-sm transition-all ${filter === cat
-                                        ? 'bg-white text-black'
-                                        : 'border border-white/10 text-white/60 hover:border-white/20 hover:text-white'
+                                        ? 'bg-black text-white'
+                                        : 'border border-black/10 text-black/60 hover:border-black/20 hover:text-black'
                                         }`}
                                 >
                                     {cat.charAt(0).toUpperCase() + cat.slice(1)}
                                 </button>
                             ))}
                         </div>
-                    </div>
+                    )}
                 </div>
-            )}
+            </div>
 
             {/* Products Grid */}
             <section className="px-6 lg:px-12 pb-32">
                 <div className="max-w-7xl mx-auto">
                     {loading ? (
                         <div className="flex flex-col items-center justify-center py-32">
-                            <Loader2 className="h-8 w-8 animate-spin text-white/40 mb-4" />
-                            <span className="text-white/40 text-sm">Loading collection...</span>
+                            <Loader2 className="h-8 w-8 animate-spin text-black/40 mb-4" />
+                            <span className="text-black/40 text-sm">Loading gift shop...</span>
                         </div>
                     ) : filteredProducts.length === 0 ? (
                         <div className="text-center py-32">
-                            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white/[0.03] border border-white/[0.05] mb-6">
-                                <span className="text-3xl font-light text-white/20">✦</span>
+                            <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-black/[0.03] border border-black/[0.05] mb-6">
+                                <span className="text-3xl font-light text-black/20">✦</span>
                             </div>
-                            <h3 className="text-2xl font-light text-white mb-3">Collection Coming Soon</h3>
-                            <p className="text-white/40 mb-8">New pieces are being prepared for the collection.</p>
-                            <Link href="/subscribe" className="inline-flex items-center gap-2 px-6 py-3 bg-white text-black rounded-full font-medium hover:bg-white/90 transition-all">
+                            <h3 className="text-2xl font-light text-black mb-3">Gift Shop Coming Soon</h3>
+                            <p className="text-black/40 mb-8">New pieces are being prepared for the shop.</p>
+                            <Link href="/subscribe" className="inline-flex items-center gap-2 px-6 py-3 bg-black text-white rounded-full font-medium hover:bg-black/90 transition-all">
                                 Get Notified
                                 <ArrowUpRight size={16} />
                             </Link>
@@ -145,9 +180,9 @@ export default function ShopPageContent({ initialProducts }: ShopPageContentProp
                                         transition={{ duration: 0.5, delay: (idx % ITEMS_PER_PAGE) * 0.1 }}
                                     >
                                         <Link href={`/shop/${product._id}`}>
-                                            <article className="group rounded-2xl border border-white/[0.05] hover:border-white/[0.1] overflow-hidden transition-all h-full bg-[#0a0a0a]">
+                                            <article className="group rounded-2xl border border-black/[0.05] hover:border-black/[0.1] overflow-hidden transition-all h-full bg-white shadow-sm hover:shadow-md">
                                                 {/* Image */}
-                                                <div className="relative aspect-[4/5] bg-white/[0.02] overflow-hidden">
+                                                <div className="relative aspect-[4/5] bg-black/[0.02] overflow-hidden">
                                                     {product.images[0] ? (
                                                         <OptimizedImage
                                                             src={product.images[0]}
@@ -158,43 +193,43 @@ export default function ShopPageContent({ initialProducts }: ShopPageContentProp
                                                         />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center">
-                                                            <span className="text-4xl font-light text-white/10">CM</span>
+                                                            <span className="text-4xl font-light text-black/10">CM</span>
                                                         </div>
                                                     )}
 
                                                     {/* Status Badge */}
                                                     {product.status === 'sold' && (
-                                                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-10">
-                                                            <span className="px-4 py-2 border border-white/20 text-white text-sm tracking-widest uppercase">
+                                                        <div className="absolute inset-0 bg-white/60 flex items-center justify-center z-10 backdrop-blur-[1px]">
+                                                            <span className="px-4 py-2 border border-black/20 text-black text-sm tracking-widest uppercase bg-white/80">
                                                                 Sold
                                                             </span>
                                                         </div>
                                                     )}
 
                                                     {/* Number */}
-                                                    <div className="absolute top-4 right-4 text-white/10 text-sm font-light z-10">
+                                                    <div className="absolute top-4 right-4 text-black/30 text-sm font-light z-10">
                                                         {String(idx + 1).padStart(2, '0')}
                                                     </div>
                                                 </div>
 
                                                 {/* Info */}
                                                 <div className="p-6">
-                                                    <span className="text-xs tracking-[0.2em] uppercase text-white/40 block mb-2">
+                                                    <span className="text-xs tracking-[0.2em] uppercase text-black/40 block mb-2">
                                                         {product.category}
                                                     </span>
-                                                    <h3 className="text-lg font-light text-white mb-3 group-hover:text-white/80 transition-colors line-clamp-1">
+                                                    <h3 className="text-lg font-light text-black mb-3 group-hover:text-[#6CD8D1] transition-colors line-clamp-1">
                                                         {product.title}
                                                     </h3>
-                                                    <p className="text-sm text-white/40 line-clamp-2 mb-4 font-light">
+                                                    <p className="text-sm text-black/40 line-clamp-2 mb-4 font-light">
                                                         {product.description}
                                                     </p>
 
                                                     {/* Price & CTA */}
-                                                    <div className="flex items-center justify-between pt-4 border-t border-white/[0.05]">
-                                                        <span className="text-xl font-light text-white">
+                                                    <div className="flex items-center justify-between pt-4 border-t border-black/[0.05]">
+                                                        <span className="text-xl font-light text-black">
                                                             {formatPrice(product.price)}
                                                         </span>
-                                                        <span className="flex items-center gap-1 text-sm text-white/40 group-hover:text-white transition-colors">
+                                                        <span className="flex items-center gap-1 text-sm text-black/40 group-hover:text-black transition-colors">
                                                             View
                                                             <ArrowUpRight size={14} />
                                                         </span>
@@ -211,10 +246,10 @@ export default function ShopPageContent({ initialProducts }: ShopPageContentProp
                                 <div className="mt-16 flex justify-center">
                                     <button
                                         onClick={() => setPage(p => p + 1)}
-                                        className="group flex flex-col items-center gap-2 text-white/40 hover:text-white transition-colors"
+                                        className="group flex flex-col items-center gap-2 text-black/40 hover:text-black transition-colors"
                                     >
                                         <span className="text-sm tracking-[0.2em] uppercase">Load More</span>
-                                        <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:bg-white/5 transition-all">
+                                        <div className="w-10 h-10 rounded-full border border-black/10 flex items-center justify-center group-hover:bg-black/5 transition-all">
                                             <ArrowDown size={16} className="animate-bounce" />
                                         </div>
                                     </button>
@@ -226,15 +261,15 @@ export default function ShopPageContent({ initialProducts }: ShopPageContentProp
             </section>
 
             {/* Commissions CTA */}
-            <section className="border-t border-white/[0.05] py-20 px-6 lg:px-12">
+            <section className="border-t border-black/[0.05] py-20 px-6 lg:px-12">
                 <div className="max-w-7xl mx-auto text-center">
-                    <h2 className="text-3xl font-light text-white mb-4">
+                    <h2 className="text-3xl font-light text-black mb-4">
                         Looking for Something Unique?
                     </h2>
-                    <p className="text-white/40 mb-8 font-light max-w-lg mx-auto">
+                    <p className="text-black/40 mb-8 font-light max-w-lg mx-auto">
                         Commission a bespoke artwork tailored to your vision and space
                     </p>
-                    <Link href="/subscribe" className="inline-flex items-center gap-2 px-8 py-4 border border-white/20 text-white rounded-full font-light hover:bg-white/5 transition-all">
+                    <Link href="/subscribe" className="inline-flex items-center gap-2 px-8 py-4 border border-black/20 text-black rounded-full font-light hover:bg-black/5 transition-all">
                         Inquire About Commissions
                         <ArrowUpRight size={16} />
                     </Link>

@@ -79,7 +79,7 @@ export default async function ProductPage({ params }: Props) {
 
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', url: siteConfig.url },
-    { name: 'Collection', url: `${siteConfig.url}/shop` },
+    { name: 'Gift Shop', url: `${siteConfig.url}/shop` },
     { name: product.title, url: `${siteConfig.url}/shop/${params.id}` },
   ]);
 
