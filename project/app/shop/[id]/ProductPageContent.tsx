@@ -193,7 +193,7 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                             {/* Variants Selection */}
                             {product.variants && product.variants.length > 0 && (
                                 <div className="border-t border-black/[0.05] pt-8">
-                                    <h3 className="text-xs tracking-[0.2em] uppercase text-black/40 mb-4">Select Option</h3>
+                                    <h3 className="text-xs tracking-[0.2em] uppercase text-black/40 mb-4">Buying Options</h3>
 
                                     {/* Original Option */}
                                     <div className="mb-3">
@@ -205,11 +205,14 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                                                 }`}
                                         >
                                             <div className="flex justify-between items-center mb-1">
-                                                <span className="font-medium text-black">Original Painting</span>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-medium text-black">Original Painting</span>
+                                                    {selectedVariant === null && <CheckCircle size={14} className="text-emerald-500" />}
+                                                </div>
                                                 <span className="text-black">{formatPrice(product.price)}</span>
                                             </div>
                                             <div className="text-sm text-black/60">
-                                                One-of-a-kind original piece.
+                                                One-of-a-kind original piece. Only 1 available.
                                                 {product.dimensions && ` (${product.dimensions.width}x${product.dimensions.height}cm)`}
                                             </div>
                                         </button>
@@ -227,12 +230,14 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                                                     }`}
                                             >
                                                 <div className="flex justify-between items-center mb-1">
-                                                    <span className="font-medium text-black">{variant.type}</span>
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="font-medium text-black">{variant.type}</span>
+                                                        {selectedVariant === variant && <CheckCircle size={14} className="text-[#6CD8D1]" />}
+                                                    </div>
                                                     <span className="text-black">{formatPrice(variant.price)}</span>
                                                 </div>
                                                 <div className="text-sm text-black/60">
-                                                    {variant.material && `${variant.material} • `}
-                                                    {variant.dimensions}
+                                                    Premium Canvas Print • {variant.dimensions}
                                                 </div>
                                             </button>
                                         ))}

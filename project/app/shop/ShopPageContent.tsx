@@ -110,31 +110,9 @@ export default function ShopPageContent({ initialProducts }: ShopPageContentProp
             {/* Filter Tabs */}
             <div className="px-6 lg:px-12 pb-12">
                 <div className="max-w-7xl mx-auto space-y-8">
-                    {/* Type Filter */}
-                    <div className="flex justify-center border-b border-black/[0.1] pb-8">
-                        <div className="flex gap-8">
-                            {['all', 'original', 'print'].map((type) => (
-                                <button
-                                    key={type}
-                                    onClick={() => setTypeFilter(type)}
-                                    className={`text-sm tracking-[0.2em] uppercase transition-colors relative pb-2 ${typeFilter === type ? 'text-black' : 'text-black/40 hover:text-black'
-                                        }`}
-                                >
-                                    {type === 'all' ? 'View All' : type === 'original' ? 'Original Paintings' : 'Canvas & Prints'}
-                                    {typeFilter === type && (
-                                        <motion.div
-                                            layoutId="activeFilter"
-                                            className="absolute bottom-0 left-0 w-full h-[1px] bg-black"
-                                        />
-                                    )}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
                     {/* Category Filter */}
                     {categories.length > 1 && (
-                        <div className="flex flex-wrap gap-3 justify-center">
+                        <div className="flex flex-wrap gap-3 justify-center mb-12">
                             {categories.map((cat) => (
                                 <button
                                     key={cat}
@@ -231,6 +209,7 @@ export default function ShopPageContent({ initialProducts }: ShopPageContentProp
                                                         <button
                                                             onClick={(e) => {
                                                                 e.preventDefault();
+                                                                e.stopPropagation();
                                                                 setQuickViewProduct(product);
                                                             }}
                                                             className="px-6 py-3 bg-white/90 backdrop-blur-md text-black rounded-full text-sm font-medium shadow-lg hover:scale-105 transition-transform translate-y-4 group-hover:translate-y-0 duration-300"
