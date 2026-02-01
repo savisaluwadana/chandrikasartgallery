@@ -101,19 +101,19 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <div className="max-w-7xl mx-auto space-y-8 bg-white min-h-screen p-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Dashboard</h1>
-          <p className="text-white/40 text-sm mt-1">Welcome back to your admin panel</p>
+          <h1 className="text-2xl font-semibold text-black">Dashboard</h1>
+          <p className="text-black/40 text-sm mt-1">Welcome back to your admin panel</p>
         </div>
         <div className="flex items-center gap-2">
           {quickActions.map((action) => {
             const Icon = action.icon;
             return (
               <Link key={action.href} href={action.href}>
-                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-black text-sm font-medium hover:bg-white/90 transition-colors">
+                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-black text-white text-sm font-medium hover:bg-black/90 transition-colors">
                   <Plus size={16} />
                   {action.label}
                 </span>
@@ -129,25 +129,25 @@ export default function AdminDashboard() {
           const Icon = stat.icon;
           return (
             <Link key={stat.label} href={stat.href}>
-              <div className="bg-[#111] border border-white/[0.08] rounded-xl p-5 hover:border-white/[0.16] transition-all group">
+              <div className="bg-white border border-black/[0.08] rounded-xl p-5 hover:border-black/[0.16] hover:shadow-md transition-all group">
                 <div className="flex items-start justify-between mb-4">
                   <div className={`p-2.5 rounded-lg ${stat.color}`}>
                     <Icon size={18} />
                   </div>
                   <ArrowUpRight
                     size={16}
-                    className="text-white/20 group-hover:text-white/60 transition-colors"
+                    className="text-black/20 group-hover:text-black/60 transition-colors"
                   />
                 </div>
                 <div className="space-y-1">
-                  <div className="text-3xl font-semibold text-white">
+                  <div className="text-3xl font-semibold text-black">
                     {loading ? (
-                      <div className="h-9 w-12 bg-white/10 rounded animate-pulse" />
+                      <div className="h-9 w-12 bg-black/10 rounded animate-pulse" />
                     ) : (
                       stat.value
                     )}
                   </div>
-                  <div className="text-sm text-white/40">{stat.label}</div>
+                  <div className="text-sm text-black/40">{stat.label}</div>
                 </div>
               </div>
             </Link>
@@ -156,10 +156,10 @@ export default function AdminDashboard() {
       </div>
 
       {/* Getting Started */}
-      <div className="bg-[#111] border border-white/[0.08] rounded-xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-white/[0.08]">
-          <h2 className="text-lg font-medium text-white">Getting Started</h2>
-          <p className="text-sm text-white/40 mt-0.5">Complete these steps to set up your platform</p>
+      <div className="bg-white border border-black/[0.08] rounded-xl overflow-hidden shadow-sm">
+        <div className="px-6 py-4 border-b border-black/[0.08]">
+          <h2 className="text-lg font-medium text-black">Getting Started</h2>
+          <p className="text-sm text-black/40 mt-0.5">Complete these steps to set up your platform</p>
         </div>
         <div className="p-6">
           <div className="grid gap-3">
@@ -171,10 +171,10 @@ export default function AdminDashboard() {
               { text: 'Send your first newsletter', href: '/admin/newsletter', done: false },
             ].map((item, i) => (
               <Link key={i} href={item.href}>
-                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/[0.03] transition-colors group">
+                <div className="flex items-center gap-3 p-3 rounded-lg hover:bg-black/[0.03] transition-colors group">
                   <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${item.done
                     ? 'bg-emerald-500 border-emerald-500'
-                    : 'border-white/20'
+                    : 'border-black/20'
                     }`}>
                     {item.done && (
                       <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -182,12 +182,12 @@ export default function AdminDashboard() {
                       </svg>
                     )}
                   </div>
-                  <span className={`text-sm ${item.done ? 'text-white/40 line-through' : 'text-white/70'}`}>
+                  <span className={`text-sm ${item.done ? 'text-black/40 line-through' : 'text-black/70'}`}>
                     {item.text}
                   </span>
                   <ArrowUpRight
                     size={14}
-                    className="ml-auto text-white/0 group-hover:text-white/40 transition-colors"
+                    className="ml-auto text-black/0 group-hover:text-black/40 transition-colors"
                   />
                 </div>
               </Link>
@@ -197,17 +197,17 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Activity placeholder */}
-      <div className="bg-[#111] border border-white/[0.08] rounded-xl overflow-hidden">
-        <div className="px-6 py-4 border-b border-white/[0.08] flex items-center justify-between">
+      <div className="bg-white border border-black/[0.08] rounded-xl overflow-hidden shadow-sm">
+        <div className="px-6 py-4 border-b border-black/[0.08] flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-medium text-white">Recent Activity</h2>
-            <p className="text-sm text-white/40 mt-0.5">Your latest updates and changes</p>
+            <h2 className="text-lg font-medium text-black">Recent Activity</h2>
+            <p className="text-sm text-black/40 mt-0.5">Your latest updates and changes</p>
           </div>
-          <TrendingUp size={18} className="text-white/20" />
+          <TrendingUp size={18} className="text-black/20" />
         </div>
         <div className="p-12 text-center">
-          <div className="text-white/20 text-sm">No recent activity yet</div>
-          <p className="text-white/10 text-xs mt-1">Activity will appear here as you use the platform</p>
+          <div className="text-black/20 text-sm">No recent activity yet</div>
+          <p className="text-black/10 text-xs mt-1">Activity will appear here as you use the platform</p>
         </div>
       </div>
     </div>

@@ -51,24 +51,23 @@ export default function BlogPostContent({ post }: BlogPostContentProps) {
             {/* Navigation */}
             <nav className="fixed top-0 w-full z-40 bg-white/80 backdrop-blur-xl border-b border-black/[0.05]">
                 <div className="max-w-7xl mx-auto px-6 lg:px-12">
-                    <div className="max-w-7xl mx-auto px-6 lg:px-12">
-                        <div className="flex items-center justify-between h-20">
-                            <Link href="/blog" className="flex items-center gap-3 text-black/60 hover:text-black transition-colors">
-                                <ArrowLeft size={18} />
-                                <span className="text-sm tracking-wide">Journal</span>
-                            </Link>
-                            <div className="flex items-center gap-3">
-                                <button
-                                    onClick={handleShare}
-                                    className="p-2 rounded-full border border-black/10 text-black/60 hover:text-black hover:border-black/20 transition-all"
-                                    aria-label="Share article"
-                                >
-                                    <Share2 size={16} />
-                                </button>
-                                <AuthNav />
-                            </div>
+                    <div className="flex items-center justify-between h-20">
+                        <Link href="/blog" className="flex items-center gap-3 text-black/60 hover:text-black transition-colors">
+                            <ArrowLeft size={18} />
+                            <span className="text-sm tracking-wide">Journal</span>
+                        </Link>
+                        <div className="flex items-center gap-3">
+                            <button
+                                onClick={handleShare}
+                                className="p-2 rounded-full border border-black/10 text-black/60 hover:text-black hover:border-black/20 transition-all"
+                                aria-label="Share article"
+                            >
+                                <Share2 size={16} />
+                            </button>
+                            <AuthNav />
                         </div>
                     </div>
+                </div>
             </nav>
 
             {/* Article Header */}

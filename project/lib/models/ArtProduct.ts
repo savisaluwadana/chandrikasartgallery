@@ -7,6 +7,13 @@ export interface IArtProduct extends Document {
   price: number;
   category: string;
   status: 'available' | 'sold';
+  hasPrints?: boolean;
+  variants?: {
+    type: string;
+    price: number;
+    dimensions?: string;
+    material?: string;
+  }[];
   dimensions?: {
     width?: number;
     height?: number;
@@ -38,13 +45,23 @@ const artProductSchema = new Schema<IArtProduct>(
     category: {
       type: String,
       required: true,
-      enum: ['painting', 'sculpture', 'print', 'craft', 'other'],
+      enum: ['painting', 'sculpture', 'print', 'craft', 'screensaver', 'necklace', 'other'],
     },
     status: {
       type: String,
       enum: ['available', 'sold'],
       default: 'available',
     },
+    hasPrints: {
+      type: Boolean,
+      default: false,
+    },
+    variants: [{
+      type: { type: String, required: true }, // e.g., 'canvas', 'paper', 'digital'
+      price: { type: Number, required: true },
+      dimensions: { type: String }, // e.g., '10x12"', 'A4'
+      material: { type: String }, // e.g., 'Cotton Rag', 'Glossy'
+    }],
     dimensions: {
       width: Number,
       height: Number,

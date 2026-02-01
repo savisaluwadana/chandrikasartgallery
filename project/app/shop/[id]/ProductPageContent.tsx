@@ -6,6 +6,13 @@ import { Loader2, Check, ArrowUpRight, ShoppingBag, Share2, Copy, CheckCircle } 
 import { PageHeader } from '@/components/page-header';
 import { useCart } from '@/lib/cart-context';
 
+interface Variant {
+    type: string;
+    price: number;
+    dimensions?: string;
+    material?: string;
+}
+
 interface Product {
     _id: string;
     title: string;
@@ -15,6 +22,8 @@ interface Product {
     images: string[];
     status: 'available' | 'sold';
     dimensions?: { width?: number; height?: number; depth?: number };
+    variants?: Variant[];
+    hasPrints?: boolean;
 }
 
 interface ProductPageContentProps {
@@ -23,14 +32,21 @@ interface ProductPageContentProps {
 
 export default function ProductPageContent({ product }: ProductPageContentProps) {
     const [mainImage, setMainImage] = useState(product.images?.[0] || '');
+    const [selectedVariant, setSelectedVariant] = useState<Variant | null>(null);
+
+    // Order Form State
     const [orderName, setOrderName] = useState('');
     const [orderEmail, setOrderEmail] = useState('');
     const [orderMessage, setOrderMessage] = useState('');
     const [orderSubmitting, setOrderSubmitting] = useState(false);
     const [orderSuccess, setOrderSuccess] = useState(false);
+
     const [copied, setCopied] = useState(false);
     const [addedToCart, setAddedToCart] = useState(false);
     const { addItem } = useCart();
+
+    // Determine current price based on selection
+    const currentPrice = selectedVariant ? selectedVariant.price : product.price;
 
     // Format price in LKR
     const formatPrice = (price: number) => {
@@ -47,6 +63,7 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     product: product._id,
+                    variant: selectedVariant ? selectedVariant.type : 'Original',
                     name: orderName,
                     email: orderEmail,
                     message: orderMessage,
@@ -67,10 +84,14 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
     };
 
     const handleAddToCart = () => {
+        const itemTitle = selectedVariant
+            ? `${product.title} - ${selectedVariant.type}`
+            : product.title;
+
         addItem({
-            id: product._id,
-            title: product.title,
-            price: product.price,
+            id: selectedVariant ? `${product._id}-${selectedVariant.type}` : product._id, // Unique ID for variant
+            title: itemTitle,
+            price: currentPrice,
             image: product.images?.[0] || '',
         });
         setAddedToCart(true);
@@ -149,7 +170,7 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
 
                                 <div className="flex items-center gap-4">
                                     <span className="text-3xl font-light text-black">
-                                        {formatPrice(product.price)}
+                                        {formatPrice(currentPrice)}
                                     </span>
                                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs ${product.status === 'available'
                                         ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20'
@@ -161,9 +182,59 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                                 </div>
                             </div>
 
+                            {/* Variants Selection */}
+                            {product.variants && product.variants.length > 0 && (
+                                <div className="border-t border-black/[0.05] pt-8">
+                                    <h3 className="text-xs tracking-[0.2em] uppercase text-black/40 mb-4">Select Option</h3>
+
+                                    {/* Original Option */}
+                                    <div className="mb-3">
+                                        <button
+                                            onClick={() => setSelectedVariant(null)} // Null means Original
+                                            className={`w-full text-left p-4 rounded-xl border transition-all ${selectedVariant === null
+                                                ? 'border-black bg-black/[0.02]'
+                                                : 'border-black/[0.1] hover:border-black/30'
+                                                }`}
+                                        >
+                                            <div className="flex justify-between items-center mb-1">
+                                                <span className="font-medium text-black">Original Artwork</span>
+                                                <span className="text-black">{formatPrice(product.price)}</span>
+                                            </div>
+                                            <div className="text-sm text-black/60">
+                                                One-of-a-kind original piece.
+                                                {product.dimensions && ` (${product.dimensions.width}x${product.dimensions.height}cm)`}
+                                            </div>
+                                        </button>
+                                    </div>
+
+                                    {/* Variants Options */}
+                                    <div className="space-y-3">
+                                        {product.variants.map((variant, idx) => (
+                                            <button
+                                                key={idx}
+                                                onClick={() => setSelectedVariant(variant)}
+                                                className={`w-full text-left p-4 rounded-xl border transition-all ${selectedVariant === variant
+                                                    ? 'border-[#6CD8D1] bg-[#6CD8D1]/10'
+                                                    : 'border-black/[0.1] hover:border-black/30'
+                                                    }`}
+                                            >
+                                                <div className="flex justify-between items-center mb-1">
+                                                    <span className="font-medium text-black">{variant.type}</span>
+                                                    <span className="text-black">{formatPrice(variant.price)}</span>
+                                                </div>
+                                                <div className="text-sm text-black/60">
+                                                    {variant.material && `${variant.material} • `}
+                                                    {variant.dimensions}
+                                                </div>
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
                             {/* Add to Cart & Share */}
                             {product.status === 'available' && (
-                                <div className="flex gap-3">
+                                <div className="flex gap-3 pt-4">
                                     <button
                                         onClick={handleAddToCart}
                                         disabled={addedToCart}
@@ -180,7 +251,7 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                                         ) : (
                                             <>
                                                 <ShoppingBag className="w-5 h-5" />
-                                                Add to Cart
+                                                Add {selectedVariant ? selectedVariant.type : 'Original'} to Cart
                                             </>
                                         )}
                                     </button>
@@ -201,50 +272,6 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                                     {product.description}
                                 </p>
                             </div>
-
-                            {/* Canvas Options - Visual Feature for now */}
-                            {product.category?.toLowerCase().includes('print') && (
-                                <div className="border-t border-black/[0.05] pt-8">
-                                    <h3 className="text-xs tracking-[0.2em] uppercase text-black/40 mb-4">Canvas Options</h3>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <div className="border border-[#6CD8D1] bg-[#6CD8D1]/5 p-4 rounded-lg cursor-pointer">
-                                            <span className="block text-sm font-medium text-black">Exhibition Canvas</span>
-                                            <span className="text-xs text-black/40">Museum quality matte finish</span>
-                                        </div>
-                                        <div className="border border-black/10 p-4 rounded-lg hover:border-black/20 cursor-pointer transition-colors">
-                                            <span className="block text-sm font-medium text-black">Fine Art Paper</span>
-                                            <span className="text-xs text-black/40">Textured cotton rag</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Dimensions */}
-                            {product.dimensions && (
-                                <div className="border-t border-black/[0.05] pt-8">
-                                    <h3 className="text-xs tracking-[0.2em] uppercase text-black/40 mb-4">Dimensions</h3>
-                                    <div className="flex gap-6">
-                                        {product.dimensions.width && (
-                                            <div>
-                                                <span className="text-black font-light">{product.dimensions.width}</span>
-                                                <span className="text-black/40 text-sm ml-1">cm W</span>
-                                            </div>
-                                        )}
-                                        {product.dimensions.height && (
-                                            <div>
-                                                <span className="text-black font-light">{product.dimensions.height}</span>
-                                                <span className="text-black/40 text-sm ml-1">cm H</span>
-                                            </div>
-                                        )}
-                                        {product.dimensions.depth && (
-                                            <div>
-                                                <span className="text-black font-light">{product.dimensions.depth}</span>
-                                                <span className="text-black/40 text-sm ml-1">cm D</span>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
 
                             {/* Order Form */}
                             {product.status === 'available' && (
