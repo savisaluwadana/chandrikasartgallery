@@ -5,70 +5,82 @@ import { sendEmail, getOrderConfirmationEmailTemplate } from '@/lib/email';
 
 // Generate unique order ID
 function generateOrderId(): string {
-    const timestamp = Date.now().toString(36).toUpperCase();
-    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-    return `CMA-${timestamp}-${random}`;
+  const timestamp = Date.now().toString(36).toUpperCase();
+  const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+  return `CMA-${timestamp}-${random}`;
+}
+
+// GET all orders (admin use)
+export async function GET() {
+  try {
+    await connectToDatabase();
+    const orders = await Order.find({}).sort({ createdAt: -1 }).lean();
+    return NextResponse.json(orders);
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
+  try {
+    const body = await request.json();
+    const { customer, items, subtotal, shipping = 0, notes } = body;
+
+    // Validation
+    if (!customer?.name || !customer?.email || !customer?.phone) {
+      return NextResponse.json(
+        { error: 'Customer name, email, and phone are required' },
+        { status: 400 }
+      );
+    }
+
+    if (!customer?.address?.street || !customer?.address?.city || !customer?.address?.postalCode) {
+      return NextResponse.json(
+        { error: 'Complete address is required' },
+        { status: 400 }
+      );
+    }
+
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return NextResponse.json(
+        { error: 'Order must contain at least one item' },
+        { status: 400 }
+      );
+    }
+
+    await connectToDatabase();
+
+    const orderId = generateOrderId();
+    const total = subtotal + shipping;
+
+    const order = new Order({
+      orderId,
+      customer: {
+        ...customer,
+        address: {
+          ...customer.address,
+          country: customer.address.country || 'Sri Lanka',
+        },
+      },
+      items,
+      subtotal,
+      shipping,
+      total,
+      notes,
+      status: 'pending',
+      paymentStatus: 'pending',
+    });
+
+    await order.save();
+
+    // Send confirmation email to customer
     try {
-        const body = await request.json();
-        const { customer, items, subtotal, shipping = 0, notes } = body;
-
-        // Validation
-        if (!customer?.name || !customer?.email || !customer?.phone) {
-            return NextResponse.json(
-                { error: 'Customer name, email, and phone are required' },
-                { status: 400 }
-            );
-        }
-
-        if (!customer?.address?.street || !customer?.address?.city || !customer?.address?.postalCode) {
-            return NextResponse.json(
-                { error: 'Complete address is required' },
-                { status: 400 }
-            );
-        }
-
-        if (!items || !Array.isArray(items) || items.length === 0) {
-            return NextResponse.json(
-                { error: 'Order must contain at least one item' },
-                { status: 400 }
-            );
-        }
-
-        await connectToDatabase();
-
-        const orderId = generateOrderId();
-        const total = subtotal + shipping;
-
-        const order = new Order({
-            orderId,
-            customer: {
-                ...customer,
-                address: {
-                    ...customer.address,
-                    country: customer.address.country || 'Sri Lanka',
-                },
-            },
-            items,
-            subtotal,
-            shipping,
-            total,
-            notes,
-            status: 'pending',
-            paymentStatus: 'pending',
-        });
-
-        await order.save();
-
-        // Send confirmation email to customer
-        try {
-            const itemsList = items.map((item: any) => `${item.title} x${item.quantity}`).join(', ');
-            await sendEmail({
-                to: customer.email,
-                subject: `Order Confirmation - ${orderId}`,
-                html: `
+      const itemsList = items.map((item: any) => `${item.title} x${item.quantity}`).join(', ');
+      await sendEmail({
+        to: customer.email,
+        subject: `Order Confirmation - ${orderId}`,
+        html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0;">
               <h1 style="margin: 0; font-size: 28px;">Order Confirmed!</h1>
@@ -107,16 +119,16 @@ export async function POST(request: Request) {
             </div>
           </div>
         `,
-                text: `Order Confirmation - ${orderId}\n\nDear ${customer.name},\n\nThank you for your order!\n\nOrder ID: ${orderId}\nItems: ${itemsList}\nTotal: Rs. ${total.toLocaleString()}\n\nWe will contact you shortly with payment details.\n\nWarm regards,\nChandrika Maelge Art`,
-            });
+        text: `Order Confirmation - ${orderId}\n\nDear ${customer.name},\n\nThank you for your order!\n\nOrder ID: ${orderId}\nItems: ${itemsList}\nTotal: Rs. ${total.toLocaleString()}\n\nWe will contact you shortly with payment details.\n\nWarm regards,\nChandrika Maelge Art`,
+      });
 
-            // Send notification to admin
-            const adminEmail = process.env.ADMIN_EMAIL || process.env.SMTP_FROM_EMAIL;
-            if (adminEmail) {
-                await sendEmail({
-                    to: adminEmail,
-                    subject: `New Order Received - ${orderId}`,
-                    html: `
+      // Send notification to admin
+      const adminEmail = process.env.ADMIN_EMAIL || process.env.SMTP_FROM_EMAIL;
+      if (adminEmail) {
+        await sendEmail({
+          to: adminEmail,
+          subject: `New Order Received - ${orderId}`,
+          html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
               <h1 style="color: #333;">New Order Received!</h1>
               <p><strong>Order ID:</strong> ${orderId}</p>
@@ -128,28 +140,28 @@ export async function POST(request: Request) {
               ${notes ? `<p><strong>Notes:</strong> ${notes}</p>` : ''}
             </div>
           `,
-                    text: `New Order: ${orderId}\nCustomer: ${customer.name}\nEmail: ${customer.email}\nPhone: ${customer.phone}\nTotal: Rs. ${total.toLocaleString()}`,
-                });
-            }
-        } catch (emailError) {
-            console.error('Failed to send order confirmation email:', emailError);
-            // Don't fail the order if email fails
-        }
-
-        return NextResponse.json({
-            success: true,
-            orderId,
-            order: {
-                orderId: order.orderId,
-                total: order.total,
-                status: order.status,
-            },
+          text: `New Order: ${orderId}\nCustomer: ${customer.name}\nEmail: ${customer.email}\nPhone: ${customer.phone}\nTotal: Rs. ${total.toLocaleString()}`,
         });
-    } catch (error) {
-        console.error('Order creation error:', error);
-        return NextResponse.json(
-            { error: 'Failed to create order. Please try again.' },
-            { status: 500 }
-        );
+      }
+    } catch (emailError) {
+      console.error('Failed to send order confirmation email:', emailError);
+      // Don't fail the order if email fails
     }
+
+    return NextResponse.json({
+      success: true,
+      orderId,
+      order: {
+        orderId: order.orderId,
+        total: order.total,
+        status: order.status,
+      },
+    });
+  } catch (error) {
+    console.error('Order creation error:', error);
+    return NextResponse.json(
+      { error: 'Failed to create order. Please try again.' },
+      { status: 500 }
+    );
+  }
 }

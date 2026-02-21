@@ -4,20 +4,21 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
-import { 
-  Menu, 
-  X, 
-  LayoutDashboard, 
-  FileText, 
-  Package, 
-  Image, 
-  Users, 
-  Mail, 
+import {
+  Menu,
+  X,
+  LayoutDashboard,
+  FileText,
+  Package,
+  Image,
+  Users,
+  Mail,
   Settings,
   ExternalLink,
   ChevronRight,
   LogOut,
-  ChevronDown
+  ChevronDown,
+  ShoppingCart
 } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -36,6 +37,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/admin/blog', label: 'Blog Posts', icon: FileText },
     { href: '/admin/products', label: 'Products', icon: Package },
+    { href: '/admin/orders', label: 'Orders', icon: ShoppingCart },
     { href: '/admin/gallery', label: 'Gallery', icon: Image },
     { href: '/admin/subscribers', label: 'Subscribers', icon: Users },
     { href: '/admin/newsletter', label: 'Newsletter', icon: Mail },
@@ -51,9 +53,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="flex h-screen bg-black">
       {/* Sidebar */}
       <aside
-        className={`${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        } fixed inset-y-0 left-0 z-50 w-64 bg-[#0a0a0a] border-r border-white/[0.08] transition-transform duration-300 lg:static lg:translate-x-0`}
+        className={`${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          } fixed inset-y-0 left-0 z-50 w-64 bg-[#0a0a0a] border-r border-white/[0.08] transition-transform duration-300 lg:static lg:translate-x-0`}
       >
         {/* Logo */}
         <div className="flex items-center justify-between h-16 px-6 border-b border-white/[0.08]">
@@ -78,12 +79,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             const active = isActive(item.href);
             return (
               <Link key={item.href} href={item.href}>
-                <span 
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                    active 
-                      ? 'bg-white text-black' 
-                      : 'text-white/60 hover:text-white hover:bg-white/[0.05]'
-                  }`}
+                <span
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all ${active
+                    ? 'bg-white text-black'
+                    : 'text-white/60 hover:text-white hover:bg-white/[0.05]'
+                    }`}
                 >
                   <Icon size={18} strokeWidth={active ? 2.5 : 2} />
                   <span>{item.label}</span>
@@ -96,8 +96,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         {/* Footer */}
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-white/[0.08] space-y-2">
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             target="_blank"
             className="flex items-center gap-2 px-3 py-2 rounded-lg text-white/40 hover:text-white/60 hover:bg-white/[0.03] transition-all text-sm"
           >
@@ -126,7 +126,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </button>
 
           <div className="flex items-center gap-3 ml-auto relative">
-            <button 
+            <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}
               className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/[0.05] transition-all"
             >
@@ -144,9 +144,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             {/* User Dropdown */}
             {userMenuOpen && (
               <>
-                <div 
-                  className="fixed inset-0 z-40" 
-                  onClick={() => setUserMenuOpen(false)} 
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setUserMenuOpen(false)}
                 />
                 <div className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-white/[0.08] bg-[#0a0a0a] shadow-2xl overflow-hidden z-50">
                   <div className="px-4 py-3 border-b border-white/[0.05]">

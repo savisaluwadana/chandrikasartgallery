@@ -19,6 +19,14 @@ interface ProductDocument {
   images?: string[];
   status?: string;
   category?: string;
+  hasPrints?: boolean;
+  dimensions?: { width?: number; height?: number; depth?: number };
+  variants?: Array<{
+    type: string;
+    price: number;
+    dimensions?: string;
+    material?: string;
+  }>;
 }
 
 // Generate dynamic metadata for SEO

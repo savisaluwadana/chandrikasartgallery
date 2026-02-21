@@ -26,7 +26,7 @@ export function Footer() {
                         <ul className="space-y-4">
                             {[
                                 { label: 'Gift Shop', href: '/shop' },
-
+                                { label: 'Gallery', href: '/gallery' },
                                 { label: 'Journal', href: '/blog' },
                                 { label: 'About', href: '/about' },
                             ].map((item) => (

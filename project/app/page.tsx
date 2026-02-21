@@ -42,6 +42,7 @@ export default function Home() {
 
   const navLinks = [
     { href: '/shop', label: 'Gift Shop' },
+    { href: '/gallery', label: 'Gallery' },
     { href: '/about', label: 'About' },
     { href: '/contact', label: 'Contact' },
     { href: '/blog', label: 'Journal' },
