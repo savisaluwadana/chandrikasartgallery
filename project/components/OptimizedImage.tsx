@@ -66,7 +66,7 @@ export function OptimizedImage({
     // For external images that might not be in allowed domains, use regular img
     if (isExternal && !src.includes('cloudinary.com')) {
         return (
-            <div className={`relative ${isLoading ? 'animate-pulse bg-white/[0.02]' : ''}`}>
+            <div className={`${fill ? 'absolute inset-0 w-full h-full' : 'relative'} ${isLoading ? 'animate-pulse bg-white/[0.02]' : ''}`}>
                 <img
                     src={src}
                     alt={alt}
@@ -81,7 +81,7 @@ export function OptimizedImage({
     }
 
     return (
-        <div className={`relative ${isLoading ? 'animate-pulse bg-white/[0.02]' : ''}`}>
+        <div className={`${fill ? 'absolute inset-0 w-full h-full' : 'relative'} ${isLoading ? 'animate-pulse bg-white/[0.02]' : ''}`}>
             <Image
                 src={src}
                 alt={alt}

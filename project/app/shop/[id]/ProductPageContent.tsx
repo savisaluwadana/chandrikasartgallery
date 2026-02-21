@@ -50,6 +50,10 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
     const [addedToCart, setAddedToCart] = useState(false);
     const { addItem } = useCart();
 
+    // Track whether the user has explicitly chosen a format (Original / Canvas / etc.)
+    const hasFormatOptions = !!(product.hasPrints || (product.variants && product.variants.length > 0));
+    const [formatPicked, setFormatPicked] = useState(!hasFormatOptions); // pre-true for products with no options
+
     // Related products
     const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
 
@@ -230,8 +234,8 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
 
                                     {/* Original Option */}
                                     <button
-                                        onClick={() => setSelectedVariant(null)}
-                                        className={`group w-full text-left p-6 rounded-2xl border-2 transition-all duration-300 relative overflow-hidden ${selectedVariant === null
+                                        onClick={() => { setSelectedVariant(null); setFormatPicked(true); }}
+                                        className={`group w-full text-left p-6 rounded-2xl border-2 transition-all duration-300 relative overflow-hidden ${formatPicked && selectedVariant === null
                                             ? 'border-black bg-black/[0.02]'
                                             : 'border-black/[0.05] hover:border-black/20 hover:bg-black/[0.01]'
                                             }`}
@@ -240,7 +244,7 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                                             <div>
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <span className="font-medium text-lg text-black">Original Painting</span>
-                                                    {selectedVariant === null && (
+                                                    {formatPicked && selectedVariant === null && (
                                                         <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
                                                             <CheckCircle size={18} className="text-black" />
                                                         </motion.div>
@@ -257,7 +261,7 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                                                 {product.dimensions.width} x {product.dimensions.height} cm
                                             </div>
                                         )}
-                                        {selectedVariant === null && (
+                                        {formatPicked && selectedVariant === null && (
                                             <motion.div
                                                 layoutId="active-glow"
                                                 className="absolute inset-0 bg-gradient-to-r from-black/[0.03] to-transparent pointer-events-none"
@@ -269,7 +273,7 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                                     {product.variants?.map((variant, idx) => (
                                         <button
                                             key={idx}
-                                            onClick={() => setSelectedVariant(variant)}
+                                            onClick={() => { setSelectedVariant(variant); setFormatPicked(true); }}
                                             className={`group w-full text-left p-6 rounded-2xl border-2 transition-all duration-300 relative overflow-hidden ${selectedVariant === variant
                                                 ? 'border-[#6CD8D1] bg-[#6CD8D1]/5'
                                                 : 'border-black/[0.05] hover:border-black/20 hover:bg-black/[0.01]'
@@ -302,26 +306,35 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                             {/* Add to Cart */}
                             {product.status === 'available' && (
                                 <div className="flex gap-4 pt-6">
-                                    <button
-                                        onClick={handleAddToCart}
-                                        disabled={addedToCart}
-                                        className={`flex-1 h-16 rounded-full font-medium transition-all duration-300 flex items-center justify-center gap-3 text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 ${addedToCart
-                                            ? 'bg-emerald-500 text-white'
-                                            : 'bg-black text-white hover:bg-gray-900'
-                                            }`}
-                                    >
-                                        {addedToCart ? (
-                                            <>
-                                                <CheckCircle className="w-6 h-6" />
-                                                Added to Cart
-                                            </>
-                                        ) : (
-                                            <>
-                                                <ShoppingBag className="w-5 h-5" />
-                                                Add to Cart
-                                            </>
-                                        )}
-                                    </button>
+                                    {/* Prompt when format not yet chosen */}
+                                    {hasFormatOptions && !formatPicked && (
+                                        <div className="flex-1 h-16 rounded-full border-2 border-dashed border-black/10 flex items-center justify-center gap-2 text-black/35 text-sm font-light">
+                                            <ShoppingBag className="w-4 h-4" />
+                                            Select a format above to continue
+                                        </div>
+                                    )}
+                                    {(!hasFormatOptions || formatPicked) && (
+                                        <button
+                                            onClick={handleAddToCart}
+                                            disabled={addedToCart}
+                                            className={`flex-1 h-16 rounded-full font-medium transition-all duration-300 flex items-center justify-center gap-3 text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 ${addedToCart
+                                                ? 'bg-emerald-500 text-white'
+                                                : 'bg-black text-white hover:bg-gray-900'
+                                                }`}
+                                        >
+                                            {addedToCart ? (
+                                                <>
+                                                    <CheckCircle className="w-6 h-6" />
+                                                    Added to Cart
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <ShoppingBag className="w-5 h-5" />
+                                                    Add to Cart
+                                                </>
+                                            )}
+                                        </button>
+                                    )}
                                     <button
                                         onClick={handleShare}
                                         className="h-16 w-16 rounded-full border border-black/10 text-black/60 hover:bg-black/5 hover:text-black transition-all flex items-center justify-center hover:scale-105 active:scale-95"

@@ -6,6 +6,9 @@ import { generateProductMetadata, siteConfig } from '@/lib/seo';
 import { generateProductSchema, generateBreadcrumbSchema } from '@/lib/schema';
 import ProductPageContent from './ProductPageContent';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface Props {
   params: { id: string };
 }
