@@ -10,8 +10,11 @@ export function Marquee() {
         'FINE ART',
     ];
 
-    const content = items.map((item, i) => (
-        <span key={i} className="inline-flex items-center gap-6 mx-6 text-sm md:text-base font-light tracking-[0.25em] text-black/30 uppercase">
+    // Duplicate items to ensure it's long enough even for one copy on wide screens
+    const extendedItems = [...items, ...items, ...items];
+
+    const content = extendedItems.map((item, i) => (
+        <span key={i} className="inline-flex items-center gap-6 mx-6 text-sm md:text-base font-light tracking-[0.25em] text-black/30 uppercase whitespace-nowrap">
             {item}
             <span className="text-[#6CD8D1] text-lg">✦</span>
         </span>
@@ -22,18 +25,20 @@ export function Marquee() {
             <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
             <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
 
-            {/* Two copies side by side; animate the wrapper by -50% for seamless loop */}
             <div
-                className="flex whitespace-nowrap"
+                className="flex w-max"
                 style={{
-                    animation: 'marquee-scroll 28s linear infinite',
-                    width: 'max-content',
+                    animation: 'marquee-scroll 60s linear infinite',
                 }}
             >
                 {/* First copy */}
-                <div className="flex items-center">{content}</div>
+                <div className="flex shrink-0 items-center justify-around min-w-full">
+                    {content}
+                </div>
                 {/* Second copy (seamless duplicate) */}
-                <div className="flex items-center">{content}</div>
+                <div className="flex shrink-0 items-center justify-around min-w-full">
+                    {content}
+                </div>
             </div>
 
             <style jsx>{`

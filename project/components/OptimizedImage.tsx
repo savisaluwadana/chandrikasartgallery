@@ -60,8 +60,8 @@ export function OptimizedImage({
         );
     }
 
-    // Check if it's an external URL or local
-    const isExternal = src?.startsWith('http') || src?.startsWith('//');
+    // Check if it's an external URL, base64 data URI, or blob
+    const isExternal = src?.startsWith('http') || src?.startsWith('//') || src?.startsWith('data:') || src?.startsWith('blob:');
 
     // For external images that might not be in allowed domains, use regular img
     if (isExternal && !src.includes('cloudinary.com')) {

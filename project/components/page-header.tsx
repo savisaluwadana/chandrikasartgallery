@@ -2,8 +2,6 @@
 
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import { AuthNav } from '@/components/auth-nav';
-import { CartButton } from '@/components/cart-drawer';
 
 interface PageHeaderProps {
   title: string;
@@ -13,20 +11,18 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, backHref = '/', backLabel = 'Back' }: PageHeaderProps) {
   return (
-    <nav className="fixed top-0 w-full z-40 bg-white/80 backdrop-blur-xl border-b border-black/[0.05]">
+    <nav className="sticky top-24 w-full z-30 bg-white/90 backdrop-blur-md border-b border-black/[0.05]">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-16">
           <Link href={backHref} className="flex items-center gap-3 text-black/60 hover:text-black transition-colors">
-            <ArrowLeft size={18} />
+            <ArrowLeft size={16} />
             <span className="text-sm tracking-wide">{backLabel}</span>
           </Link>
-          <span className="text-lg tracking-[0.2em] font-light uppercase text-black">
+          <span className="text-sm md:text-base tracking-[0.2em] font-light uppercase text-black absolute left-1/2 -translate-x-1/2">
             {title}
           </span>
-          <div className="min-w-[80px] flex items-center justify-end gap-2 text-black">
-            <CartButton />
-            <AuthNav />
-          </div>
+          {/* Spacer to balance the back button */}
+          <div className="w-[100px]" />
         </div>
       </div>
     </nav>

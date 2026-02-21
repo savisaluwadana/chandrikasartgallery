@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import Image from 'next/image';
+import { OptimizedImage } from '@/components/OptimizedImage';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/page-header';
@@ -60,7 +60,7 @@ export default function AboutPage() {
                         >
                             <div className="absolute inset-0 bg-gradient-to-br from-[#6CD8D1]/10 to-transparent mix-blend-multiply z-10" />
                             {portraitImage ? (
-                                <Image
+                                <OptimizedImage
                                     src={portraitImage}
                                     alt="Chandrika Maelge — Artist Portrait"
                                     fill

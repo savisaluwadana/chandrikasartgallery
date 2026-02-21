@@ -6,6 +6,7 @@ import { generateOrganizationSchema, generateWebsiteSchema, generateLocalBusines
 import { Providers } from './providers';
 import { NoiseOverlay } from '@/components/ui/noise-overlay';
 import { ScrollProgress } from '@/components/ui/scroll-progress';
+import { Navbar } from '@/components/navbar';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -61,7 +62,10 @@ export default function RootLayout({
       <body className={`${inter.className} bg-white antialiased`}>
         <ScrollProgress />
         <NoiseOverlay />
-        <Providers>{children}</Providers>
+        <Providers>
+          <Navbar />
+          {children}
+        </Providers>
       </body>
     </html>
   );

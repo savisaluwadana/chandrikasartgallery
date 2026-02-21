@@ -2,8 +2,8 @@
 
 import { useRef, useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { ArrowUpRight } from 'lucide-react';
+import { OptimizedImage } from '@/components/OptimizedImage';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 export function Featured() {
@@ -92,7 +92,7 @@ export function Featured() {
                         >
                             <div className="absolute inset-0 bg-gradient-to-br from-[#6CD8D1]/20 to-transparent mix-blend-multiply opacity-60 z-10" />
                             {featuredImage ? (
-                                <Image
+                                <OptimizedImage
                                     src={featuredImage}
                                     alt={featuredTitle || 'Featured Artwork'}
                                     fill

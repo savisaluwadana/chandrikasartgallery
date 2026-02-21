@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { ArrowLeft, ArrowUpRight, Clock, Share2 } from 'lucide-react';
 import { AuthNav } from '@/components/auth-nav';
+import { OptimizedImage } from '@/components/OptimizedImage';
 
 interface BlogPost {
     _id: string;
@@ -49,11 +50,11 @@ export default function BlogPostContent({ post }: BlogPostContentProps) {
     return (
         <div className="min-h-screen bg-white">
             {/* Navigation */}
-            <nav className="fixed top-0 w-full z-40 bg-white/80 backdrop-blur-xl border-b border-black/[0.05]">
+            <nav className="sticky top-24 w-full z-30 bg-white/90 backdrop-blur-md border-b border-black/[0.05]">
                 <div className="max-w-7xl mx-auto px-6 lg:px-12">
-                    <div className="flex items-center justify-between h-20">
+                    <div className="flex items-center justify-between h-16">
                         <Link href="/blog" className="flex items-center gap-3 text-black/60 hover:text-black transition-colors">
-                            <ArrowLeft size={18} />
+                            <ArrowLeft size={16} />
                             <span className="text-sm tracking-wide">Journal</span>
                         </Link>
                         <div className="flex items-center gap-3">
@@ -64,7 +65,6 @@ export default function BlogPostContent({ post }: BlogPostContentProps) {
                             >
                                 <Share2 size={16} />
                             </button>
-                            <AuthNav />
                         </div>
                     </div>
                 </div>
@@ -112,11 +112,12 @@ export default function BlogPostContent({ post }: BlogPostContentProps) {
                 <div className="px-6 lg:px-12 mb-16">
                     <div className="max-w-5xl mx-auto">
                         <div className="aspect-[21/9] rounded-2xl overflow-hidden border border-black/[0.05]">
-                            <img
+                            <OptimizedImage
                                 src={post.featuredImage}
                                 alt={post.title}
-                                className="w-full h-full object-cover"
-                                loading="eager"
+                                fill
+                                className="object-cover"
+                                priority
                             />
                         </div>
                     </div>
