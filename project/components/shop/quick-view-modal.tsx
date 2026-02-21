@@ -1,10 +1,11 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ArrowUpRight, ShoppingBag } from 'lucide-react';
+import { ArrowUpRight, ShoppingBag, X } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useCart } from '@/lib/cart-context';
+import { OptimizedImage } from '@/components/OptimizedImage';
 
 interface QuickViewModalProps {
     isOpen: boolean;
@@ -60,10 +61,12 @@ export function QuickViewModal({ isOpen, onClose, product }: QuickViewModalProps
                             {/* Image */}
                             <div className="bg-black/5 aspect-[4/5] md:aspect-auto md:h-full relative">
                                 {product.images?.[0] ? (
-                                    <img
+                                    <OptimizedImage
                                         src={product.images[0]}
                                         alt={product.title}
-                                        className="w-full h-full object-cover"
+                                        fill
+                                        className="object-cover"
+                                        sizes="(max-width: 768px) 100vw, 50vw"
                                     />
                                 ) : (
                                     <div className="w-full h-full flex items-center justify-center">

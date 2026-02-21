@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Loader2, Check, ArrowUpRight, ShoppingBag, Share2, Copy, CheckCircle } from 'lucide-react';
 import { PageHeader } from '@/components/page-header';
@@ -49,6 +49,34 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
     const [copied, setCopied] = useState(false);
     const [addedToCart, setAddedToCart] = useState(false);
     const { addItem } = useCart();
+
+    // Track whether the user has explicitly chosen a format (Original / Canvas / etc.)
+    const hasFormatOptions = !!(product.hasPrints || (product.variants && product.variants.length > 0));
+    const [formatPicked, setFormatPicked] = useState(!hasFormatOptions); // pre-true for products with no options
+
+    // Related products
+    const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
+
+    useEffect(() => {
+        fetch('/api/shop/products')
+            .then(r => r.json())
+            .then((all: Product[]) => {
+                if (!Array.isArray(all)) return;
+                const related = all
+                    .filter(p => p._id !== product._id && p.category === product.category)
+                    .slice(0, 3);
+                // If not enough same-category, pad with others (different product)
+                if (related.length < 3) {
+                    const others = all
+                        .filter(p => p._id !== product._id && p.category !== product.category)
+                        .slice(0, 3 - related.length);
+                    setRelatedProducts([...related, ...others]);
+                } else {
+                    setRelatedProducts(related);
+                }
+            })
+            .catch(() => { });
+    }, [product._id, product.category]);
 
     // Determine current price based on selection
     const currentPrice = selectedVariant ? selectedVariant.price : product.price;
@@ -199,15 +227,15 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                                 </p>
                             </div>
 
-                            {/* Buying Options */}
-                            {product.variants && product.variants.length > 0 && (
+                            {/* Buying Options — shown when product supports prints/canvas OR has variants */}
+                            {(product.hasPrints || (product.variants && product.variants.length > 0)) && (
                                 <div className="space-y-4 pt-4">
                                     <h3 className="text-xs tracking-[0.2em] uppercase text-black/40">Select Format</h3>
 
                                     {/* Original Option */}
                                     <button
-                                        onClick={() => setSelectedVariant(null)}
-                                        className={`group w-full text-left p-6 rounded-2xl border-2 transition-all duration-300 relative overflow-hidden ${selectedVariant === null
+                                        onClick={() => { setSelectedVariant(null); setFormatPicked(true); }}
+                                        className={`group w-full text-left p-6 rounded-2xl border-2 transition-all duration-300 relative overflow-hidden ${formatPicked && selectedVariant === null
                                             ? 'border-black bg-black/[0.02]'
                                             : 'border-black/[0.05] hover:border-black/20 hover:bg-black/[0.01]'
                                             }`}
@@ -216,7 +244,7 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                                             <div>
                                                 <div className="flex items-center gap-2 mb-1">
                                                     <span className="font-medium text-lg text-black">Original Painting</span>
-                                                    {selectedVariant === null && (
+                                                    {formatPicked && selectedVariant === null && (
                                                         <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }}>
                                                             <CheckCircle size={18} className="text-black" />
                                                         </motion.div>
@@ -233,7 +261,7 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                                                 {product.dimensions.width} x {product.dimensions.height} cm
                                             </div>
                                         )}
-                                        {selectedVariant === null && (
+                                        {formatPicked && selectedVariant === null && (
                                             <motion.div
                                                 layoutId="active-glow"
                                                 className="absolute inset-0 bg-gradient-to-r from-black/[0.03] to-transparent pointer-events-none"
@@ -241,11 +269,11 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                                         )}
                                     </button>
 
-                                    {/* Canvas Option */}
-                                    {product.variants.map((variant, idx) => (
+                                    {/* Canvas / Print Variants */}
+                                    {product.variants?.map((variant, idx) => (
                                         <button
                                             key={idx}
-                                            onClick={() => setSelectedVariant(variant)}
+                                            onClick={() => { setSelectedVariant(variant); setFormatPicked(true); }}
                                             className={`group w-full text-left p-6 rounded-2xl border-2 transition-all duration-300 relative overflow-hidden ${selectedVariant === variant
                                                 ? 'border-[#6CD8D1] bg-[#6CD8D1]/5'
                                                 : 'border-black/[0.05] hover:border-black/20 hover:bg-black/[0.01]'
@@ -278,26 +306,35 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                             {/* Add to Cart */}
                             {product.status === 'available' && (
                                 <div className="flex gap-4 pt-6">
-                                    <button
-                                        onClick={handleAddToCart}
-                                        disabled={addedToCart}
-                                        className={`flex-1 h-16 rounded-full font-medium transition-all duration-300 flex items-center justify-center gap-3 text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 ${addedToCart
-                                            ? 'bg-emerald-500 text-white'
-                                            : 'bg-black text-white hover:bg-gray-900'
-                                            }`}
-                                    >
-                                        {addedToCart ? (
-                                            <>
-                                                <CheckCircle className="w-6 h-6" />
-                                                Added to Cart
-                                            </>
-                                        ) : (
-                                            <>
-                                                <ShoppingBag className="w-5 h-5" />
-                                                Add to Cart
-                                            </>
-                                        )}
-                                    </button>
+                                    {/* Prompt when format not yet chosen */}
+                                    {hasFormatOptions && !formatPicked && (
+                                        <div className="flex-1 h-16 rounded-full border-2 border-dashed border-black/10 flex items-center justify-center gap-2 text-black/35 text-sm font-light">
+                                            <ShoppingBag className="w-4 h-4" />
+                                            Select a format above to continue
+                                        </div>
+                                    )}
+                                    {(!hasFormatOptions || formatPicked) && (
+                                        <button
+                                            onClick={handleAddToCart}
+                                            disabled={addedToCart}
+                                            className={`flex-1 h-16 rounded-full font-medium transition-all duration-300 flex items-center justify-center gap-3 text-lg shadow-lg hover:shadow-xl hover:-translate-y-1 ${addedToCart
+                                                ? 'bg-emerald-500 text-white'
+                                                : 'bg-black text-white hover:bg-gray-900'
+                                                }`}
+                                        >
+                                            {addedToCart ? (
+                                                <>
+                                                    <CheckCircle className="w-6 h-6" />
+                                                    Added to Cart
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <ShoppingBag className="w-5 h-5" />
+                                                    Add to Cart
+                                                </>
+                                            )}
+                                        </button>
+                                    )}
                                     <button
                                         onClick={handleShare}
                                         className="h-16 w-16 rounded-full border border-black/10 text-black/60 hover:bg-black/5 hover:text-black transition-all flex items-center justify-center hover:scale-105 active:scale-95"
@@ -406,18 +443,71 @@ export default function ProductPageContent({ product }: ProductPageContentProps)
                 </div>
             </section>
 
-            {/* Related CTA */}
-            <section className="border-t border-black/[0.05] py-20 px-6 lg:px-12">
-                <div className="max-w-7xl mx-auto text-center">
-                    <h2 className="text-2xl font-light text-black mb-4">
-                        Explore More Artworks
-                    </h2>
-                    <Link href="/shop" className="inline-flex items-center gap-2 px-6 py-3 border border-black/20 text-black rounded-full font-light hover:bg-black/5 transition-all">
-                        View Full Gift Shop
-                        <ArrowUpRight size={16} />
-                    </Link>
-                </div>
-            </section>
+            {/* Related Products */}
+            {relatedProducts.length > 0 && (
+                <section className="border-t border-black/[0.05] py-20 px-6 lg:px-12">
+                    <div className="max-w-7xl mx-auto">
+                        <div className="flex items-end justify-between mb-12">
+                            <div>
+                                <span className="text-xs tracking-[0.3em] uppercase text-black/30 block mb-3">You May Also Like</span>
+                                <h2 className="text-3xl font-light text-black">Related Artworks</h2>
+                            </div>
+                            <Link href="/shop" className="inline-flex items-center gap-2 text-sm text-black/40 hover:text-black transition-colors">
+                                View all <ArrowUpRight size={14} />
+                            </Link>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {relatedProducts.map((related) => (
+                                <Link key={related._id} href={`/shop/${related._id}`} className="group">
+                                    <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden mb-4 relative">
+                                        {related.images?.[0] ? (
+                                            <OptimizedImage
+                                                src={related.images[0]}
+                                                alt={related.title}
+                                                fill
+                                                className="object-cover group-hover:scale-105 transition-transform duration-700"
+                                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                            />
+                                        ) : (
+                                            <div className="absolute inset-0 flex items-center justify-center bg-[#f8f7f5]">
+                                                <span className="text-4xl font-serif italic text-black/10">CM</span>
+                                            </div>
+                                        )}
+                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300" />
+                                        <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-all">
+                                            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md">
+                                                <ArrowUpRight size={14} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs tracking-[0.15em] uppercase text-black/30 mb-1">{related.category}</p>
+                                        <h3 className="text-base font-light text-black mb-1 group-hover:text-black/60 transition-colors">{related.title}</h3>
+                                        <p className="text-sm text-black/50">{`Rs. ${related.price?.toLocaleString()}`}</p>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            )}
+
+            {/* Fallback CTA when no related products */}
+            {relatedProducts.length === 0 && (
+                <section className="border-t border-black/[0.05] py-20 px-6 lg:px-12">
+                    <div className="max-w-7xl mx-auto text-center">
+                        <h2 className="text-2xl font-light text-black mb-4">
+                            Explore More Artworks
+                        </h2>
+                        <Link href="/shop" className="inline-flex items-center gap-2 px-6 py-3 border border-black/20 text-black rounded-full font-light hover:bg-black/5 transition-all">
+                            View Full Gift Shop
+                            <ArrowUpRight size={16} />
+                        </Link>
+                    </div>
+                </section>
+            )}
+
 
             <ViewInRoomModal
                 isOpen={viewInRoomOpen}

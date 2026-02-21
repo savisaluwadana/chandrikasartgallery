@@ -2,7 +2,9 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { OptimizedImage } from '@/components/OptimizedImage';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { PageHeader } from '@/components/page-header';
 
 export default function AboutPage() {
@@ -27,6 +29,20 @@ export default function AboutPage() {
         { year: '2023', event: 'Launch of online gallery' },
     ];
 
+    const [portraitImage, setPortraitImage] = useState<string | null>(null);
+
+    useEffect(() => {
+        fetch('/api/images/list')
+            .then(r => r.json())
+            .then((images: Array<{ imageUrl?: string }>) => {
+                if (Array.isArray(images) && images.length > 0) {
+                    const img = images.find(i => i.imageUrl) || images[0];
+                    if (img?.imageUrl) setPortraitImage(img.imageUrl);
+                }
+            })
+            .catch(() => { });
+    }, []);
+
     return (
         <div className="min-h-screen bg-white">
             <PageHeader title="About" />
@@ -42,15 +58,25 @@ export default function AboutPage() {
                             transition={{ duration: 0.8 }}
                             className="relative aspect-[3/4] bg-gray-100 rounded-sm overflow-hidden order-2 lg:order-1"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-br from-[#6CD8D1]/10 to-transparent mix-blend-multiply" />
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="text-center">
-                                    <div className="w-40 h-40 rounded-full border border-black/5 flex items-center justify-center mx-auto mb-6 backdrop-blur-sm">
-                                        <span className="text-6xl font-serif italic text-black/20">CM</span>
+                            <div className="absolute inset-0 bg-gradient-to-br from-[#6CD8D1]/10 to-transparent mix-blend-multiply z-10" />
+                            {portraitImage ? (
+                                <OptimizedImage
+                                    src={portraitImage}
+                                    alt="Chandrika Maelge — Artist Portrait"
+                                    fill
+                                    className="object-cover"
+                                    sizes="(max-width: 1024px) 100vw, 50vw"
+                                />
+                            ) : (
+                                <div className="absolute inset-0 flex items-center justify-center bg-[#f8f7f5]">
+                                    <div className="text-center">
+                                        <div className="w-40 h-40 rounded-full border border-black/5 flex items-center justify-center mx-auto mb-6 backdrop-blur-sm">
+                                            <span className="text-6xl font-serif italic text-black/20">CM</span>
+                                        </div>
+                                        <span className="text-black/30 text-sm tracking-[0.2em] uppercase">Artist Portrait</span>
                                     </div>
-                                    <span className="text-black/30 text-sm tracking-[0.2em] uppercase">Artist Portrait</span>
                                 </div>
-                            </div>
+                            )}
                         </motion.div>
 
                         {/* Content */}

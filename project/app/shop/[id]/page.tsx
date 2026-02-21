@@ -6,6 +6,9 @@ import { generateProductMetadata, siteConfig } from '@/lib/seo';
 import { generateProductSchema, generateBreadcrumbSchema } from '@/lib/schema';
 import ProductPageContent from './ProductPageContent';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface Props {
   params: { id: string };
 }
@@ -19,6 +22,14 @@ interface ProductDocument {
   images?: string[];
   status?: string;
   category?: string;
+  hasPrints?: boolean;
+  dimensions?: { width?: number; height?: number; depth?: number };
+  variants?: Array<{
+    type: string;
+    price: number;
+    dimensions?: string;
+    material?: string;
+  }>;
 }
 
 // Generate dynamic metadata for SEO

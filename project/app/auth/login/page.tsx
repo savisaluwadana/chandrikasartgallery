@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/lib/auth-context';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Loader2, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Loader2, ArrowLeft, CheckCircle, AlertCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -33,7 +34,6 @@ export default function LoginPage() {
       if (!result.success) {
         setError(result.error || 'Login failed');
       } else {
-        // Redirect based on role - will be handled by the page they came from
         router.push('/');
         router.refresh();
       }
@@ -45,69 +45,91 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-black">
-      {/* Left Side - Decorative */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-neutral-900 via-neutral-800 to-black" />
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-white/5 rounded-full blur-2xl" />
+    <div className="min-h-screen bg-white flex">
+      {/* Left panel — decorative art side */}
+      <div className="hidden lg:flex lg:w-[45%] relative overflow-hidden bg-black flex-col">
+        {/* Subtle background layers */}
+        <div className="absolute inset-0 bg-gradient-to-br from-neutral-900 via-[#111] to-black" />
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#6CD8D1]/10 rounded-full blur-[120px]" />
+          <div className="absolute bottom-1/3 right-1/4 w-64 h-64 bg-white/5 rounded-full blur-[80px]" />
         </div>
-        <div className="relative z-10 flex flex-col justify-between p-12 w-full">
-          <Link href="/" className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors text-sm">
-            <ArrowLeft size={16} />
-            Back to Gallery
+
+        <div className="relative z-10 flex flex-col justify-between h-full p-14">
+          <Link href="/" className="inline-flex items-center gap-2 text-white/40 hover:text-white transition-colors text-sm w-fit">
+            <ArrowLeft size={15} />
+            Back to site
           </Link>
+
           <div>
-            <h1 className="text-5xl font-light text-white mb-4 tracking-tight">
+            <div className="w-16 h-16 rounded-full border border-white/10 flex items-center justify-center mb-10">
+              <span className="text-2xl font-serif italic text-white/30">CM</span>
+            </div>
+            <h1 className="text-5xl font-light text-white leading-tight mb-5 tracking-tight">
               Chandrika<br />
-              <span className="font-semibold">Maelge</span>
+              <span className="font-serif italic text-white/60">Maelge</span>
             </h1>
-            <p className="text-white/40 text-lg max-w-sm">
-              Access the creative studio. Manage your artworks, stories, and connect with your audience.
+            <p className="text-white/30 text-base font-light max-w-[260px] leading-relaxed">
+              Access the creative studio — manage artworks, stories, and connect with your audience.
             </p>
           </div>
-          <p className="text-white/20 text-xs">
-            © 2024 Chandrika Maelge Art. All rights reserved.
+
+          <p className="text-white/15 text-xs">
+            © {new Date().getFullYear()} Chandrika Maelge Art
           </p>
         </div>
       </div>
 
-      {/* Right Side - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-        <div className="w-full max-w-md">
-          {/* Mobile Logo */}
-          <div className="lg:hidden mb-12 text-center">
-            <Link href="/" className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors text-sm mb-6">
-              <ArrowLeft size={16} />
-              Back to Gallery
+      {/* Right panel — form */}
+      <div className="flex-1 flex items-center justify-center px-6 py-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-md"
+        >
+          {/* Mobile back link */}
+          <div className="lg:hidden mb-10">
+            <Link href="/" className="inline-flex items-center gap-2 text-black/40 hover:text-black transition-colors text-sm">
+              <ArrowLeft size={15} />
+              Back to site
             </Link>
-            <h1 className="text-3xl font-light text-white tracking-tight">
-              Chandrika <span className="font-semibold">Maelge</span>
-            </h1>
           </div>
 
-          <div className="text-center mb-10">
-            <h2 className="text-2xl font-light text-white mb-2">Welcome Back</h2>
-            <p className="text-white/40 text-sm">Sign in to your account</p>
+          {/* Header */}
+          <div className="mb-10">
+            <span className="block text-xs tracking-[0.25em] uppercase text-black/30 mb-3">Welcome back</span>
+            <h2 className="text-4xl font-light text-black tracking-tight">Sign In</h2>
+            <p className="text-black/40 mt-2 font-light">Access your account</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {justRegistered && (
-              <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 p-4 flex items-center gap-3">
-                <CheckCircle className="w-5 h-5 text-emerald-400 flex-shrink-0" />
-                <p className="text-emerald-400 text-sm">Account created successfully! Please sign in.</p>
-              </div>
-            )}
+          {/* Success / Error Banners */}
+          {justRegistered && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 flex items-center gap-3"
+            >
+              <CheckCircle className="w-5 h-5 text-emerald-500 flex-shrink-0" />
+              <p className="text-emerald-600 text-sm">Account created — please sign in.</p>
+            </motion.div>
+          )}
 
-            {error && (
-              <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-4">
-                <p className="text-red-400 text-sm">{error}</p>
-              </div>
-            )}
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 rounded-xl border border-red-500/20 bg-red-500/5 p-4 flex items-center gap-3"
+            >
+              <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+              <p className="text-red-600 text-sm">{error}</p>
+            </motion.div>
+          )}
 
-            <div className="space-y-2">
-              <label htmlFor="email" className="block text-sm font-medium text-white/70">
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-black/60 mb-2">
                 Email Address
               </label>
               <input
@@ -115,15 +137,15 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="artist@studio.com"
+                placeholder="your@email.com"
                 required
                 disabled={loading}
-                className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-white/20 focus:bg-white/[0.05] transition-all disabled:opacity-50"
+                className="w-full px-5 py-4 rounded-xl bg-black/[0.02] border border-black/[0.08] text-black placeholder-black/25 focus:outline-none focus:border-black/20 focus:bg-white transition-all disabled:opacity-50 text-base"
               />
             </div>
 
-            <div className="space-y-2">
-              <label htmlFor="password" className="block text-sm font-medium text-white/70">
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-black/60 mb-2">
                 Password
               </label>
               <input
@@ -134,19 +156,19 @@ export default function LoginPage() {
                 placeholder="••••••••"
                 required
                 disabled={loading}
-                className="w-full px-4 py-3 rounded-lg bg-white/[0.03] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-white/20 focus:bg-white/[0.05] transition-all disabled:opacity-50"
+                className="w-full px-5 py-4 rounded-xl bg-black/[0.02] border border-black/[0.08] text-black placeholder-black/25 focus:outline-none focus:border-black/20 focus:bg-white transition-all disabled:opacity-50 text-base"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3.5 rounded-lg bg-white text-black font-medium hover:bg-white/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-4 mt-2 rounded-xl bg-black text-white font-medium hover:bg-black/85 transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-base"
             >
               {loading ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  Signing in...
+                  Signing in…
                 </>
               ) : (
                 'Sign In'
@@ -154,18 +176,15 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="mt-8 pt-8 border-t border-white/[0.06] text-center">
-            <p className="text-white/40 text-sm">
+          <div className="mt-8 pt-8 border-t border-black/[0.06] text-center">
+            <p className="text-black/40 text-sm font-light">
               Don&apos;t have an account?{' '}
-              <Link
-                href="/auth/signup"
-                className="text-white hover:underline"
-              >
-                Sign up
+              <Link href="/auth/signup" className="text-black hover:text-black/60 transition-colors underline underline-offset-4">
+                Create one
               </Link>
             </p>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

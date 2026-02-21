@@ -9,7 +9,9 @@ import {
   Image,
   TrendingUp,
   ArrowUpRight,
-  Plus
+  Plus,
+  ShoppingCart,
+  Clock
 } from 'lucide-react';
 
 interface Stats {
@@ -17,38 +19,65 @@ interface Stats {
   products: number;
   subscribers: number;
   images: number;
+  orders: number;
 }
+
+interface RecentOrder {
+  orderId: string;
+  customer: { name: string; email: string };
+  total: number;
+  status: string;
+  createdAt: string;
+}
+
+const STATUS_COLORS: Record<string, string> = {
+  pending: 'bg-amber-500/10 text-amber-600',
+  confirmed: 'bg-blue-500/10 text-blue-600',
+  processing: 'bg-purple-500/10 text-purple-600',
+  shipped: 'bg-cyan-500/10 text-cyan-600',
+  delivered: 'bg-emerald-500/10 text-emerald-600',
+  cancelled: 'bg-red-500/10 text-red-600',
+};
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats>({
     blogPosts: 0,
     products: 0,
     subscribers: 0,
-    images: 0
+    images: 0,
+    orders: 0,
   });
+  const [recentOrders, setRecentOrders] = useState<RecentOrder[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchStats() {
       try {
-        const [blogRes, productsRes, subscribersRes, imagesRes] = await Promise.all([
+        const [blogRes, productsRes, subscribersRes, imagesRes, ordersRes] = await Promise.all([
           fetch('/api/blog/list', { cache: 'no-store' }).catch(() => ({ ok: false })),
           fetch('/api/shop/products', { cache: 'no-store' }).catch(() => ({ ok: false })),
           fetch('/api/subscribers/list', { cache: 'no-store' }).catch(() => ({ ok: false })),
-          fetch('/api/images/list', { cache: 'no-store' }).catch(() => ({ ok: false }))
+          fetch('/api/images/list', { cache: 'no-store' }).catch(() => ({ ok: false })),
+          fetch('/api/orders', { cache: 'no-store' }).catch(() => ({ ok: false })),
         ]);
 
         const blogData = blogRes.ok ? await (blogRes as Response).json() : [];
         const productsData = productsRes.ok ? await (productsRes as Response).json() : [];
         const subscribersData = subscribersRes.ok ? await (subscribersRes as Response).json() : [];
         const imagesData = imagesRes.ok ? await (imagesRes as Response).json() : [];
+        const ordersData = ordersRes.ok ? await (ordersRes as Response).json() : [];
 
         setStats({
           blogPosts: Array.isArray(blogData) ? blogData.length : 0,
           products: Array.isArray(productsData) ? productsData.length : 0,
           subscribers: Array.isArray(subscribersData) ? subscribersData.length : 0,
-          images: Array.isArray(imagesData) ? imagesData.length : 0
+          images: Array.isArray(imagesData) ? imagesData.length : 0,
+          orders: Array.isArray(ordersData) ? ordersData.length : 0,
         });
+
+        if (Array.isArray(ordersData)) {
+          setRecentOrders(ordersData.slice(0, 5));
+        }
       } catch (error) {
         console.error('Error fetching stats:', error);
       } finally {
@@ -65,7 +94,6 @@ export default function AdminDashboard() {
       value: stats.blogPosts,
       icon: FileText,
       href: '/admin/blog',
-      change: '+2 this week',
       color: 'bg-violet-500/10 text-violet-400'
     },
     {
@@ -73,15 +101,20 @@ export default function AdminDashboard() {
       value: stats.products,
       icon: Package,
       href: '/admin/products',
-      change: 'Manage inventory',
       color: 'bg-blue-500/10 text-blue-400'
+    },
+    {
+      label: 'Orders',
+      value: stats.orders,
+      icon: ShoppingCart,
+      href: '/admin/orders',
+      color: 'bg-orange-500/10 text-orange-400'
     },
     {
       label: 'Subscribers',
       value: stats.subscribers,
       icon: Users,
       href: '/admin/subscribers',
-      change: 'Active users',
       color: 'bg-emerald-500/10 text-emerald-400'
     },
     {
@@ -89,7 +122,6 @@ export default function AdminDashboard() {
       value: stats.images,
       icon: Image,
       href: '/admin/gallery',
-      change: 'Media library',
       color: 'bg-amber-500/10 text-amber-400'
     },
   ];
@@ -100,6 +132,9 @@ export default function AdminDashboard() {
     { label: 'Send Newsletter', href: '/admin/newsletter', icon: Users },
   ];
 
+  const formatPrice = (n: number) => `Rs. ${n.toLocaleString()}`;
+  const formatDate = (d: string) => new Date(d).toLocaleDateString('en-LK', { day: 'numeric', month: 'short' });
+
   return (
     <div className="max-w-7xl mx-auto space-y-8 bg-white min-h-screen p-6">
       {/* Header */}
@@ -108,7 +143,7 @@ export default function AdminDashboard() {
           <h1 className="text-2xl font-semibold text-black">Dashboard</h1>
           <p className="text-black/40 text-sm mt-1">Welcome back to your admin panel</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           {quickActions.map((action) => {
             const Icon = action.icon;
             return (
@@ -124,7 +159,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
         {statCards.map((stat) => {
           const Icon = stat.icon;
           return (
@@ -153,6 +188,52 @@ export default function AdminDashboard() {
             </Link>
           );
         })}
+      </div>
+
+      {/* Recent Orders */}
+      <div className="bg-white border border-black/[0.08] rounded-xl overflow-hidden shadow-sm">
+        <div className="px-6 py-4 border-b border-black/[0.08] flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-medium text-black">Recent Orders</h2>
+            <p className="text-sm text-black/40 mt-0.5">Latest customer orders</p>
+          </div>
+          <Link href="/admin/orders">
+            <span className="text-sm text-black/40 hover:text-black transition-colors flex items-center gap-1">
+              View all <ArrowUpRight size={14} />
+            </span>
+          </Link>
+        </div>
+        {loading ? (
+          <div className="p-6 space-y-3">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="h-12 bg-black/[0.03] rounded-lg animate-pulse" />
+            ))}
+          </div>
+        ) : recentOrders.length === 0 ? (
+          <div className="p-12 text-center">
+            <Clock size={32} className="mx-auto text-black/10 mb-3" />
+            <div className="text-black/20 text-sm">No orders yet</div>
+            <p className="text-black/10 text-xs mt-1">Orders will appear here as customers place them</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-black/[0.05]">
+            {recentOrders.map(order => (
+              <div key={order.orderId} className="px-6 py-3.5 flex items-center justify-between gap-4 hover:bg-black/[0.01] transition-colors">
+                <div className="min-w-0">
+                  <p className="text-sm font-mono font-medium text-black">{order.orderId}</p>
+                  <p className="text-xs text-black/40 truncate">{order.customer.name} · {order.customer.email}</p>
+                </div>
+                <div className="flex items-center gap-3 flex-shrink-0">
+                  <span className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize ${STATUS_COLORS[order.status] || 'bg-black/5 text-black/40'}`}>
+                    {order.status}
+                  </span>
+                  <span className="text-sm font-medium text-black">{formatPrice(order.total)}</span>
+                  <span className="text-xs text-black/30 hidden sm:block">{formatDate(order.createdAt)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Getting Started */}
@@ -193,21 +274,6 @@ export default function AdminDashboard() {
               </Link>
             ))}
           </div>
-        </div>
-      </div>
-
-      {/* Recent Activity placeholder */}
-      <div className="bg-white border border-black/[0.08] rounded-xl overflow-hidden shadow-sm">
-        <div className="px-6 py-4 border-b border-black/[0.08] flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-medium text-black">Recent Activity</h2>
-            <p className="text-sm text-black/40 mt-0.5">Your latest updates and changes</p>
-          </div>
-          <TrendingUp size={18} className="text-black/20" />
-        </div>
-        <div className="p-12 text-center">
-          <div className="text-black/20 text-sm">No recent activity yet</div>
-          <p className="text-black/10 text-xs mt-1">Activity will appear here as you use the platform</p>
         </div>
       </div>
     </div>

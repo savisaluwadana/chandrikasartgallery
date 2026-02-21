@@ -44,7 +44,19 @@ const artProductSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-const ArtProduct = mongoose.models.ArtProduct || mongoose.model('ArtProduct', artProductSchema);
+interface IArtProduct extends mongoose.Document {
+    title: string;
+    description: string;
+    images: string[];
+    price: number;
+    category: string;
+    status: string;
+    hasPrints: boolean;
+    variants: any[];
+    dimensions?: any;
+}
+
+const ArtProduct = (mongoose.models.ArtProduct as mongoose.Model<IArtProduct>) || mongoose.model<IArtProduct>('ArtProduct', artProductSchema);
 
 async function seed() {
     try {

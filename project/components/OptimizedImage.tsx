@@ -60,13 +60,13 @@ export function OptimizedImage({
         );
     }
 
-    // Check if it's an external URL or local
-    const isExternal = src?.startsWith('http') || src?.startsWith('//');
+    // Check if it's an external URL, base64 data URI, or blob
+    const isExternal = src?.startsWith('http') || src?.startsWith('//') || src?.startsWith('data:') || src?.startsWith('blob:');
 
     // For external images that might not be in allowed domains, use regular img
     if (isExternal && !src.includes('cloudinary.com')) {
         return (
-            <div className={`relative ${isLoading ? 'animate-pulse bg-white/[0.02]' : ''}`}>
+            <div className={`${fill ? 'absolute inset-0 w-full h-full' : 'relative'} ${isLoading ? 'animate-pulse bg-white/[0.02]' : ''}`}>
                 <img
                     src={src}
                     alt={alt}
@@ -81,7 +81,7 @@ export function OptimizedImage({
     }
 
     return (
-        <div className={`relative ${isLoading ? 'animate-pulse bg-white/[0.02]' : ''}`}>
+        <div className={`${fill ? 'absolute inset-0 w-full h-full' : 'relative'} ${isLoading ? 'animate-pulse bg-white/[0.02]' : ''}`}>
             <Image
                 src={src}
                 alt={alt}

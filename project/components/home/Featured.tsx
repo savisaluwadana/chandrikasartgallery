@@ -1,9 +1,9 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { ArrowUpRight } from 'lucide-react';
+import { OptimizedImage } from '@/components/OptimizedImage';
 import { motion, useScroll, useTransform } from 'framer-motion';
 
 export function Featured() {
@@ -15,6 +15,24 @@ export function Featured() {
 
     const y = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
     const textY = useTransform(scrollYProgress, [0, 1], ["0%", "-10%"]);
+
+    const [featuredImage, setFeaturedImage] = useState<string | null>(null);
+    const [featuredTitle, setFeaturedTitle] = useState<string>('');
+
+    useEffect(() => {
+        fetch('/api/shop/products')
+            .then(r => r.json())
+            .then((products: Array<{ images?: string[]; title?: string }>) => {
+                if (Array.isArray(products) && products.length > 0) {
+                    const first = products.find(p => p.images && p.images.length > 0) || products[0];
+                    if (first?.images?.[0]) {
+                        setFeaturedImage(first.images[0]);
+                        setFeaturedTitle(first.title || '');
+                    }
+                }
+            })
+            .catch(() => { });
+    }, []);
 
     return (
         <section ref={containerRef} className="py-32 px-6 lg:px-12 border-t border-black/[0.05] overflow-hidden">
@@ -73,16 +91,41 @@ export function Featured() {
                             className="relative aspect-[3/4] md:aspect-[4/5] bg-gray-100 rounded-sm overflow-hidden shadow-2xl shadow-black/5"
                         >
                             <div className="absolute inset-0 bg-gradient-to-br from-[#6CD8D1]/20 to-transparent mix-blend-multiply opacity-60 z-10" />
-                            {/* Placeholder for actual image - in production this would be next/image */}
-                            <div className="absolute inset-0 flex items-center justify-center bg-white">
-                                <div className="text-center">
-                                    <div className="w-48 h-48 rounded-full border border-black/5 flex items-center justify-center mx-auto mb-6">
-                                        <span className="text-8xl font-serif italic text-black/10">CM</span>
+                            {featuredImage ? (
+                                <OptimizedImage
+                                    src={featuredImage}
+                                    alt={featuredTitle || 'Featured Artwork'}
+                                    fill
+                                    className="object-cover"
+                                    sizes="(max-width: 1024px) 100vw, 50vw"
+                                />
+                            ) : (
+                                <div className="absolute inset-0 flex items-center justify-center bg-[#f8f7f5]">
+                                    <div className="text-center">
+                                        <div className="w-48 h-48 rounded-full border border-black/5 flex items-center justify-center mx-auto mb-6">
+                                            <span className="text-8xl font-serif italic text-black/10">CM</span>
+                                        </div>
+                                        <span className="text-black/30 text-sm tracking-[0.2em] uppercase">Featured Work</span>
                                     </div>
-                                    <span className="text-black/30 text-sm tracking-[0.2em] uppercase">Featured Work</span>
                                 </div>
-                            </div>
+                            )}
                         </motion.div>
+
+                        {/* Decorative tag */}
+                        {featuredTitle && (
+                            <motion.div
+                                initial={{ opacity: 0, x: 20 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                className="absolute -bottom-6 -right-4 bg-white border border-black/[0.06] shadow-lg rounded-xl p-4 max-w-[180px] z-20"
+                            >
+                                <p className="text-[10px] tracking-[0.2em] uppercase text-black/30 mb-1">Featured</p>
+                                <p className="text-sm font-light text-black line-clamp-2">{featuredTitle}</p>
+                                <Link href="/shop" className="inline-flex items-center gap-1 mt-2 text-xs text-[#6CD8D1] hover:text-[#5BC0B9] transition-colors">
+                                    View in Shop <ArrowUpRight size={10} />
+                                </Link>
+                            </motion.div>
+                        )}
                     </div>
                 </div>
             </div>
