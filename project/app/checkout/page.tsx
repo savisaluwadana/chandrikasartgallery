@@ -109,7 +109,7 @@ export default function CheckoutPage() {
 
     if (success) {
         return (
-            <div className="min-h-screen bg-[#0a0a0a]">
+            <div className="min-h-screen bg-white">
                 <PageHeader title="Order Confirmed" />
 
                 <section className="pt-32 pb-24 px-6 lg:px-12">
@@ -118,9 +118,9 @@ export default function CheckoutPage() {
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{ type: 'spring', damping: 15 }}
-                            className="w-24 h-24 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-8"
+                            className="w-24 h-24 rounded-full bg-[#6CD8D1]/10 border border-[#6CD8D1]/20 flex items-center justify-center mx-auto mb-8"
                         >
-                            <CheckCircle className="w-12 h-12 text-emerald-400" />
+                            <CheckCircle className="w-12 h-12 text-[#6CD8D1]" />
                         </motion.div>
 
                         <motion.div
@@ -128,25 +128,25 @@ export default function CheckoutPage() {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
                         >
-                            <h1 className="text-4xl font-light text-white mb-4">Thank You!</h1>
-                            <p className="text-white/60 text-lg mb-2">Your order has been placed successfully.</p>
-                            <p className="text-white/40 mb-8">
-                                Order ID: <span className="text-white font-mono">{orderId}</span>
+                            <h1 className="text-4xl font-light text-black mb-4">Thank You!</h1>
+                            <p className="text-black/60 text-lg mb-2">Your order has been placed successfully.</p>
+                            <p className="text-black/40 mb-8">
+                                Order ID: <span className="text-black font-mono">{orderId}</span>
                             </p>
 
-                            <div className="bg-white/[0.02] border border-white/[0.08] rounded-2xl p-6 mb-8 text-left">
-                                <h3 className="text-white/60 text-sm mb-4">What happens next?</h3>
-                                <ul className="space-y-3 text-white/50 text-sm">
+                            <div className="bg-black/[0.02] border border-black/[0.05] rounded-2xl p-6 mb-8 text-left">
+                                <h3 className="text-black/60 text-sm mb-4">What happens next?</h3>
+                                <ul className="space-y-3 text-black/50 text-sm">
                                     <li className="flex gap-3">
-                                        <span className="text-emerald-400">1.</span>
+                                        <span className="text-[#6CD8D1]">1.</span>
                                         We'll send a confirmation email to {formData.email}
                                     </li>
                                     <li className="flex gap-3">
-                                        <span className="text-emerald-400">2.</span>
+                                        <span className="text-[#6CD8D1]">2.</span>
                                         We'll contact you with payment details
                                     </li>
                                     <li className="flex gap-3">
-                                        <span className="text-emerald-400">3.</span>
+                                        <span className="text-[#6CD8D1]">3.</span>
                                         Once confirmed, we'll carefully prepare your artwork for shipping
                                     </li>
                                 </ul>
@@ -155,13 +155,13 @@ export default function CheckoutPage() {
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                 <Link
                                     href="/shop"
-                                    className="px-8 py-4 bg-white text-black rounded-xl font-medium hover:bg-white/90 transition-all"
+                                    className="px-8 py-4 bg-black text-white rounded-xl font-medium hover:bg-black/80 transition-all"
                                 >
                                     Continue Shopping
                                 </Link>
                                 <Link
                                     href="/"
-                                    className="px-8 py-4 border border-white/20 text-white rounded-xl font-light hover:bg-white/5 transition-all"
+                                    className="px-8 py-4 border border-black/10 text-black rounded-xl font-light hover:bg-black/5 transition-all"
                                 >
                                     Return Home
                                 </Link>
@@ -174,19 +174,19 @@ export default function CheckoutPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a]">
+        <div className="min-h-screen bg-white">
             <PageHeader title="Checkout" backHref="/shop" backLabel="Continue Shopping" />
 
             <section className="pt-32 pb-24 px-6 lg:px-12">
                 <div className="max-w-6xl mx-auto">
                     {items.length === 0 ? (
                         <div className="text-center py-20">
-                            <ShoppingBag className="w-20 h-20 text-white/10 mx-auto mb-6" />
-                            <h2 className="text-2xl font-light text-white mb-4">Your cart is empty</h2>
-                            <p className="text-white/40 mb-8">Add some beautiful artwork to get started.</p>
+                            <ShoppingBag className="w-20 h-20 text-black/5 mx-auto mb-6" />
+                            <h2 className="text-2xl font-light text-black mb-4">Your cart is empty</h2>
+                            <p className="text-black/40 mb-8">Add some beautiful artwork to get started.</p>
                             <Link
                                 href="/shop"
-                                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-black rounded-xl font-medium hover:bg-white/90 transition-all"
+                                className="inline-flex items-center gap-2 px-8 py-4 bg-black text-white rounded-xl font-medium hover:bg-black/90 transition-all"
                             >
                                 <ArrowLeft className="w-4 h-4" />
                                 Browse Collection
@@ -196,8 +196,8 @@ export default function CheckoutPage() {
                         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
                             {/* Order Summary */}
                             <div className="order-2 lg:order-1">
-                                <h2 className="text-xl font-light text-white mb-6 flex items-center gap-3">
-                                    <ShoppingBag className="w-5 h-5 text-white/60" />
+                                <h2 className="text-xl font-light text-black mb-6 flex items-center gap-3">
+                                    <ShoppingBag className="w-5 h-5 text-black/60" />
                                     Order Summary
                                 </h2>
 
@@ -205,9 +205,9 @@ export default function CheckoutPage() {
                                     {items.map((item) => (
                                         <div
                                             key={item.id}
-                                            className="flex gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/[0.05]"
+                                            className="flex gap-4 p-4 rounded-xl bg-black/[0.02] border border-black/[0.05]"
                                         >
-                                            <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-white/5 flex-shrink-0">
+                                            <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-black/5 flex-shrink-0">
                                                 {item.image ? (
                                                     <Image
                                                         src={item.image}
@@ -217,36 +217,36 @@ export default function CheckoutPage() {
                                                     />
                                                 ) : (
                                                     <div className="w-full h-full flex items-center justify-center">
-                                                        <span className="text-xl font-serif italic text-white/20">CM</span>
+                                                        <span className="text-xl font-serif italic text-black/20">CM</span>
                                                     </div>
                                                 )}
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <h3 className="text-white font-light truncate">{item.title}</h3>
-                                                <p className="text-white/40 text-sm">Qty: {item.quantity}</p>
-                                                <p className="text-white/60 mt-1">{formatPrice(item.price * item.quantity)}</p>
+                                                <h3 className="text-black font-light truncate">{item.title}</h3>
+                                                <p className="text-black/40 text-sm">Qty: {item.quantity}</p>
+                                                <p className="text-black/60 mt-1">{formatPrice(item.price * item.quantity)}</p>
                                             </div>
                                             <button
                                                 onClick={() => removeItem(item.id)}
                                                 className="p-2 hover:bg-red-500/10 rounded-lg transition-colors self-start"
                                             >
-                                                <Trash2 className="w-4 h-4 text-white/40 hover:text-red-400" />
+                                                <Trash2 className="w-4 h-4 text-black/40 hover:text-red-400" />
                                             </button>
                                         </div>
                                     ))}
                                 </div>
 
                                 {/* Totals */}
-                                <div className="border-t border-white/[0.08] pt-6 space-y-3">
-                                    <div className="flex justify-between text-white/60">
+                                <div className="border-t border-black/[0.08] pt-6 space-y-3">
+                                    <div className="flex justify-between text-black/60">
                                         <span>Subtotal</span>
                                         <span>{formatPrice(totalPrice)}</span>
                                     </div>
-                                    <div className="flex justify-between text-white/60">
+                                    <div className="flex justify-between text-black/60">
                                         <span>Shipping</span>
                                         <span>{shipping === 0 ? 'Calculated after order' : formatPrice(shipping)}</span>
                                     </div>
-                                    <div className="flex justify-between text-lg text-white pt-3 border-t border-white/[0.08]">
+                                    <div className="flex justify-between text-lg text-black pt-3 border-t border-black/[0.08]">
                                         <span>Total</span>
                                         <span>{formatPrice(total)}</span>
                                     </div>
@@ -255,21 +255,21 @@ export default function CheckoutPage() {
 
                             {/* Checkout Form */}
                             <div className="order-1 lg:order-2">
-                                <h2 className="text-xl font-light text-white mb-6 flex items-center gap-3">
-                                    <MapPin className="w-5 h-5 text-white/60" />
+                                <h2 className="text-xl font-light text-black mb-6 flex items-center gap-3">
+                                    <MapPin className="w-5 h-5 text-black/60" />
                                     Delivery Details
                                 </h2>
 
                                 {error && (
                                     <div className="mb-6 p-4 rounded-xl border border-red-500/20 bg-red-500/5">
-                                        <p className="text-sm text-red-300">{error}</p>
+                                        <p className="text-sm text-red-600">{error}</p>
                                     </div>
                                 )}
 
                                 <form onSubmit={handleSubmit} className="space-y-5">
                                     <div className="grid sm:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm text-white/60 mb-2">Full Name *</label>
+                                            <label className="block text-sm text-black/60 mb-2">Full Name *</label>
                                             <input
                                                 type="text"
                                                 name="name"
@@ -277,12 +277,12 @@ export default function CheckoutPage() {
                                                 onChange={handleChange}
                                                 required
                                                 disabled={loading}
-                                                className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-white/20 transition-all disabled:opacity-50"
+                                                className="w-full px-4 py-3 rounded-xl bg-black/[0.03] border border-black/[0.08] text-black placeholder-black/30 focus:outline-none focus:border-black/20 focus:bg-white transition-all disabled:opacity-50"
                                                 placeholder="John Doe"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm text-white/60 mb-2">Phone *</label>
+                                            <label className="block text-sm text-black/60 mb-2">Phone *</label>
                                             <input
                                                 type="tel"
                                                 name="phone"
@@ -290,14 +290,14 @@ export default function CheckoutPage() {
                                                 onChange={handleChange}
                                                 required
                                                 disabled={loading}
-                                                className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-white/20 transition-all disabled:opacity-50"
+                                                className="w-full px-4 py-3 rounded-xl bg-black/[0.03] border border-black/[0.08] text-black placeholder-black/30 focus:outline-none focus:border-black/20 focus:bg-white transition-all disabled:opacity-50"
                                                 placeholder="+94 77 123 4567"
                                             />
                                         </div>
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm text-white/60 mb-2">Email *</label>
+                                        <label className="block text-sm text-black/60 mb-2">Email *</label>
                                         <input
                                             type="email"
                                             name="email"
@@ -305,13 +305,13 @@ export default function CheckoutPage() {
                                             onChange={handleChange}
                                             required
                                             disabled={loading}
-                                            className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-white/20 transition-all disabled:opacity-50"
+                                            className="w-full px-4 py-3 rounded-xl bg-black/[0.03] border border-black/[0.08] text-black placeholder-black/30 focus:outline-none focus:border-black/20 focus:bg-white transition-all disabled:opacity-50"
                                             placeholder="your@email.com"
                                         />
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm text-white/60 mb-2">Street Address *</label>
+                                        <label className="block text-sm text-black/60 mb-2">Street Address *</label>
                                         <input
                                             type="text"
                                             name="street"
@@ -319,14 +319,14 @@ export default function CheckoutPage() {
                                             onChange={handleChange}
                                             required
                                             disabled={loading}
-                                            className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-white/20 transition-all disabled:opacity-50"
+                                            className="w-full px-4 py-3 rounded-xl bg-black/[0.03] border border-black/[0.08] text-black placeholder-black/30 focus:outline-none focus:border-black/20 focus:bg-white transition-all disabled:opacity-50"
                                             placeholder="123 Main Street, Apartment 4B"
                                         />
                                     </div>
 
                                     <div className="grid sm:grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm text-white/60 mb-2">City *</label>
+                                            <label className="block text-sm text-black/60 mb-2">City *</label>
                                             <input
                                                 type="text"
                                                 name="city"
@@ -334,12 +334,12 @@ export default function CheckoutPage() {
                                                 onChange={handleChange}
                                                 required
                                                 disabled={loading}
-                                                className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-white/20 transition-all disabled:opacity-50"
+                                                className="w-full px-4 py-3 rounded-xl bg-black/[0.03] border border-black/[0.08] text-black placeholder-black/30 focus:outline-none focus:border-black/20 focus:bg-white transition-all disabled:opacity-50"
                                                 placeholder="Colombo"
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm text-white/60 mb-2">Postal Code *</label>
+                                            <label className="block text-sm text-black/60 mb-2">Postal Code *</label>
                                             <input
                                                 type="text"
                                                 name="postalCode"
@@ -347,27 +347,27 @@ export default function CheckoutPage() {
                                                 onChange={handleChange}
                                                 required
                                                 disabled={loading}
-                                                className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-white/20 transition-all disabled:opacity-50"
+                                                className="w-full px-4 py-3 rounded-xl bg-black/[0.03] border border-black/[0.08] text-black placeholder-black/30 focus:outline-none focus:border-black/20 focus:bg-white transition-all disabled:opacity-50"
                                                 placeholder="00100"
                                             />
                                         </div>
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm text-white/60 mb-2">Order Notes (optional)</label>
+                                        <label className="block text-sm text-black/60 mb-2">Order Notes (optional)</label>
                                         <textarea
                                             name="notes"
                                             value={formData.notes}
                                             onChange={handleChange}
                                             disabled={loading}
                                             rows={3}
-                                            className="w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-white/20 transition-all disabled:opacity-50 resize-none"
+                                            className="w-full px-4 py-3 rounded-xl bg-black/[0.03] border border-black/[0.08] text-black placeholder-black/30 focus:outline-none focus:border-black/20 focus:bg-white transition-all disabled:opacity-50 resize-none"
                                             placeholder="Any special instructions for delivery..."
                                         />
                                     </div>
 
-                                    <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4">
-                                        <p className="text-amber-300 text-sm">
+                                    <div className="bg-[#6CD8D1]/10 border border-[#6CD8D1]/20 rounded-xl p-4">
+                                        <p className="text-[#5BC0B9] text-sm">
                                             <strong>Payment:</strong> After placing your order, we will contact you with payment details.
                                             We accept bank transfers and cash on delivery for Colombo.
                                         </p>
@@ -376,7 +376,7 @@ export default function CheckoutPage() {
                                     <button
                                         type="submit"
                                         disabled={loading || items.length === 0}
-                                        className="w-full px-6 py-4 bg-white text-black rounded-xl font-medium hover:bg-white/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                                        className="w-full px-6 py-4 bg-[#6CD8D1] text-white rounded-xl font-medium hover:bg-[#5BC0B9] transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-[#6CD8D1]/20"
                                     >
                                         {loading ? (
                                             <>
@@ -386,7 +386,7 @@ export default function CheckoutPage() {
                                         ) : (
                                             <>
                                                 Place Order
-                                                <span className="text-black/60">({formatPrice(total)})</span>
+                                                <span className="text-white/80">({formatPrice(total)})</span>
                                             </>
                                         )}
                                     </button>

@@ -17,7 +17,7 @@ export function AuthNav({ className }: AuthNavProps) {
 
   if (loading) {
     return (
-      <div className="w-8 h-8 rounded-full bg-white/10 animate-pulse" />
+      <div className="w-8 h-8 rounded-full bg-black/5 animate-pulse" />
     );
   }
 
@@ -25,7 +25,7 @@ export function AuthNav({ className }: AuthNavProps) {
     return (
       <Link
         href="/auth/login"
-        className="text-sm px-5 py-2 rounded-full border border-white/20 text-white/80 hover:bg-white hover:text-black transition-all"
+        className="text-sm px-5 py-2 rounded-full border border-black/10 text-black hover:bg-black hover:text-white transition-all"
       >
         Sign In
       </Link>
@@ -45,32 +45,32 @@ export function AuthNav({ className }: AuthNavProps) {
     <div className="relative">
       <button
         onClick={() => setDropdownOpen(!dropdownOpen)}
-        className="flex items-center gap-2 px-3 py-2 rounded-full border border-white/10 hover:border-white/20 transition-all"
+        className="flex items-center gap-2 px-3 py-2 rounded-full border border-black/10 hover:border-black/30 transition-all"
       >
-        <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center">
-          <span className="text-white text-xs font-medium">
+        <div className="w-7 h-7 rounded-full bg-black/5 flex items-center justify-center">
+          <span className="text-black text-xs font-medium">
             {user.name?.charAt(0)?.toUpperCase() || 'U'}
           </span>
         </div>
-        <span className="text-sm text-white/80 hidden sm:block">
+        <span className="text-sm text-black hidden sm:block">
           {user.name?.split(' ')[0] || 'User'}
         </span>
-        <ChevronDown size={14} className={`text-white/40 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown size={14} className={`text-black/40 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} />
       </button>
 
       {dropdownOpen && (
         <>
-          <div 
-            className="fixed inset-0 z-40" 
-            onClick={() => setDropdownOpen(false)} 
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setDropdownOpen(false)}
           />
-          <div className="absolute right-0 mt-2 w-56 rounded-xl border border-white/10 bg-[#0a0a0a] shadow-2xl overflow-hidden z-50">
+          <div className="absolute right-0 mt-2 w-56 rounded-xl border border-black/10 bg-white shadow-xl overflow-hidden z-50">
             {/* User Info */}
-            <div className="px-4 py-3 border-b border-white/[0.05]">
-              <p className="text-sm font-medium text-white truncate">{user.name}</p>
-              <p className="text-xs text-white/40 truncate">{user.email}</p>
+            <div className="px-4 py-3 border-b border-black/[0.05]">
+              <p className="text-sm font-medium text-black truncate">{user.name}</p>
+              <p className="text-xs text-black/40 truncate">{user.email}</p>
               {isAdmin && (
-                <span className="inline-block mt-2 px-2 py-0.5 rounded-full bg-white/10 text-[10px] uppercase tracking-wider text-white/60">
+                <span className="inline-block mt-2 px-2 py-0.5 rounded-full bg-black/5 text-[10px] uppercase tracking-wider text-black/60">
                   Admin
                 </span>
               )}
@@ -82,7 +82,7 @@ export function AuthNav({ className }: AuthNavProps) {
                 <Link
                   href="/admin"
                   onClick={() => setDropdownOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/70 hover:text-white hover:bg-white/[0.05] transition-all"
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-black/70 hover:text-black hover:bg-black/[0.05] transition-all"
                 >
                   <Settings size={16} />
                   <span>Studio Dashboard</span>
@@ -91,7 +91,7 @@ export function AuthNav({ className }: AuthNavProps) {
               <Link
                 href="/account"
                 onClick={() => setDropdownOpen(false)}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/70 hover:text-white hover:bg-white/[0.05] transition-all"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-black/70 hover:text-black hover:bg-black/[0.05] transition-all"
               >
                 <User size={16} />
                 <span>My Account</span>
@@ -99,10 +99,10 @@ export function AuthNav({ className }: AuthNavProps) {
             </div>
 
             {/* Sign Out */}
-            <div className="p-2 border-t border-white/[0.05]">
+            <div className="p-2 border-t border-black/[0.05]">
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all"
+                className="flex items-center gap-3 w-full px-3 py-2.5 rounded-lg text-sm text-red-500 hover:text-red-700 hover:bg-red-500/10 transition-all"
               >
                 <LogOut size={16} />
                 <span>Sign Out</span>
@@ -132,7 +132,7 @@ export function AuthNavMobile({ onClose }: AuthNavMobileProps) {
       <Link
         href="/auth/login"
         onClick={onClose}
-        className="text-lg px-8 py-3 rounded-full border border-white/20 hover:bg-white hover:text-black transition-all"
+        className="text-lg px-8 py-3 rounded-full border border-black/20 hover:bg-black hover:text-white transition-all text-black"
       >
         Sign In
       </Link>
@@ -151,28 +151,28 @@ export function AuthNavMobile({ onClose }: AuthNavMobileProps) {
   return (
     <div className="flex flex-col items-center gap-4">
       <div className="text-center mb-4">
-        <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-3">
-          <span className="text-white text-xl font-medium">
+        <div className="w-16 h-16 rounded-full bg-black/5 flex items-center justify-center mx-auto mb-3">
+          <span className="text-black text-xl font-medium">
             {user.name?.charAt(0)?.toUpperCase() || 'U'}
           </span>
         </div>
-        <p className="text-white font-light">{user.name}</p>
-        <p className="text-white/40 text-sm">{user.email}</p>
+        <p className="text-black font-light">{user.name}</p>
+        <p className="text-black/40 text-sm">{user.email}</p>
       </div>
 
       {isAdmin && (
         <Link
           href="/admin"
           onClick={onClose}
-          className="text-lg font-light tracking-wide hover:text-white/60 transition-colors"
+          className="text-lg font-light tracking-wide text-black/60 hover:text-black transition-colors"
         >
           Studio Dashboard
         </Link>
       )}
-      
+
       <button
         onClick={handleLogout}
-        className="text-lg font-light tracking-wide text-red-400 hover:text-red-300 transition-colors"
+        className="text-lg font-light tracking-wide text-red-500 hover:text-red-600 transition-colors"
       >
         Sign Out
       </button>

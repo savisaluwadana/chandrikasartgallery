@@ -66,14 +66,17 @@ export function OptimizedImage({
     // For external images that might not be in allowed domains, use regular img
     if (isExternal && !src.includes('cloudinary.com')) {
         return (
-            <img
-                src={src}
-                alt={alt}
-                className={className}
-                onError={handleError}
-                loading={priority ? 'eager' : 'lazy'}
-                style={fill ? { objectFit: 'cover', width: '100%', height: '100%' } : undefined}
-            />
+            <div className={`relative ${isLoading ? 'animate-pulse bg-white/[0.02]' : ''}`}>
+                <img
+                    src={src}
+                    alt={alt}
+                    className={className}
+                    onError={handleError}
+                    onLoad={handleLoad}
+                    loading={priority ? 'eager' : 'lazy'}
+                    style={fill ? { objectFit: 'cover', width: '100%', height: '100%', position: 'absolute', inset: 0 } : undefined}
+                />
+            </div>
         );
     }
 

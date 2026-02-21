@@ -28,7 +28,7 @@ export default function AboutPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a]">
+        <div className="min-h-screen bg-white">
             <PageHeader title="About" />
 
             {/* Hero Section */}
@@ -40,15 +40,15 @@ export default function AboutPage() {
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
                             transition={{ duration: 0.8 }}
-                            className="relative aspect-[3/4] bg-[#111] rounded-sm overflow-hidden order-2 lg:order-1"
+                            className="relative aspect-[3/4] bg-gray-100 rounded-sm overflow-hidden order-2 lg:order-1"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-br from-white/[0.05] to-transparent" />
+                            <div className="absolute inset-0 bg-gradient-to-br from-[#6CD8D1]/10 to-transparent mix-blend-multiply" />
                             <div className="absolute inset-0 flex items-center justify-center">
                                 <div className="text-center">
-                                    <div className="w-40 h-40 rounded-full border border-white/10 flex items-center justify-center mx-auto mb-6 backdrop-blur-sm">
-                                        <span className="text-6xl font-serif italic text-white/20">CM</span>
+                                    <div className="w-40 h-40 rounded-full border border-black/5 flex items-center justify-center mx-auto mb-6 backdrop-blur-sm">
+                                        <span className="text-6xl font-serif italic text-black/20">CM</span>
                                     </div>
-                                    <span className="text-white/30 text-sm tracking-[0.2em] uppercase">Artist Portrait</span>
+                                    <span className="text-black/30 text-sm tracking-[0.2em] uppercase">Artist Portrait</span>
                                 </div>
                             </div>
                         </motion.div>
@@ -60,7 +60,7 @@ export default function AboutPage() {
                                 initial="hidden"
                                 animate="visible"
                                 variants={fadeInUp}
-                                className="text-xs tracking-[0.3em] uppercase text-white/40 mb-6 block"
+                                className="text-xs tracking-[0.3em] uppercase text-black/40 mb-6 block"
                             >
                                 The Artist
                             </motion.span>
@@ -69,16 +69,16 @@ export default function AboutPage() {
                                 initial="hidden"
                                 animate="visible"
                                 variants={fadeInUp}
-                                className="text-5xl md:text-6xl font-light leading-tight mb-8"
+                                className="text-5xl md:text-6xl font-light leading-tight mb-8 text-black"
                             >
-                                Chandrika <span className="font-serif italic text-white/80">Maelge</span>
+                                Chandrika <span className="font-serif italic text-black/60">Maelge</span>
                             </motion.h1>
                             <motion.p
                                 custom={2}
                                 initial="hidden"
                                 animate="visible"
                                 variants={fadeInUp}
-                                className="text-white/50 text-lg leading-relaxed mb-6 font-light"
+                                className="text-black/60 text-lg leading-relaxed mb-6 font-light"
                             >
                                 Born and raised in the heart of Sri Lanka, Chandrika Maelge discovered her passion
                                 for art at an early age. Drawing inspiration from the vibrant landscapes, rich
@@ -90,7 +90,7 @@ export default function AboutPage() {
                                 initial="hidden"
                                 animate="visible"
                                 variants={fadeInUp}
-                                className="text-white/50 text-lg leading-relaxed mb-8 font-light"
+                                className="text-black/60 text-lg leading-relaxed mb-8 font-light"
                             >
                                 Her work spans various mediums—from oil paintings that capture the golden light
                                 of tropical sunsets to intricate mixed-media pieces that explore themes of
@@ -104,7 +104,7 @@ export default function AboutPage() {
                                 variants={fadeInUp}
                             >
                                 <Link href="/gallery">
-                                    <span className="group inline-flex items-center gap-2 text-lg text-white hover:text-white/70 transition-colors border-b border-white/30 pb-1">
+                                    <span className="group inline-flex items-center gap-2 text-lg text-black hover:text-black/60 transition-colors border-b border-black/20 pb-1">
                                         Explore the Gallery
                                         <ArrowUpRight size={18} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                                     </span>
@@ -116,13 +116,13 @@ export default function AboutPage() {
             </section>
 
             {/* Philosophy Section */}
-            <section className="py-24 px-6 lg:px-12 border-t border-white/[0.05]">
+            <section className="py-24 px-6 lg:px-12 border-t border-black/[0.05] bg-black/[0.02]">
                 <div className="max-w-4xl mx-auto text-center">
                     <motion.span
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true }}
-                        className="text-xs tracking-[0.3em] uppercase text-white/40 mb-8 block"
+                        className="text-xs tracking-[0.3em] uppercase text-black/40 mb-8 block"
                     >
                         Philosophy
                     </motion.span>
@@ -130,7 +130,7 @@ export default function AboutPage() {
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="text-3xl md:text-4xl font-light leading-relaxed text-white/80 font-serif italic"
+                        className="text-3xl md:text-4xl font-light leading-relaxed text-black/80 font-serif italic"
                     >
                         "Art is not what I see, but what I make others see. Each brushstroke is a word,
                         each canvas a story waiting to be told."
@@ -140,7 +140,7 @@ export default function AboutPage() {
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.2 }}
-                        className="text-white/40 mt-8"
+                        className="text-black/40 mt-8"
                     >
                         — Chandrika Maelge
                     </motion.p>
@@ -148,13 +148,13 @@ export default function AboutPage() {
             </section>
 
             {/* Timeline Section */}
-            <section className="py-24 px-6 lg:px-12 bg-[#080808]">
+            <section className="py-24 px-6 lg:px-12 bg-white">
                 <div className="max-w-5xl mx-auto">
                     <motion.span
                         initial={{ opacity: 0 }}
                         whileInView={{ opacity: 1 }}
                         viewport={{ once: true }}
-                        className="text-xs tracking-[0.3em] uppercase text-white/40 mb-12 block text-center"
+                        className="text-xs tracking-[0.3em] uppercase text-black/40 mb-12 block text-center"
                     >
                         Journey
                     </motion.span>
@@ -169,11 +169,11 @@ export default function AboutPage() {
                                 transition={{ delay: idx * 0.1 }}
                                 className="flex items-center gap-8 group"
                             >
-                                <span className="text-4xl font-light text-white/20 group-hover:text-white/40 transition-colors w-24 flex-shrink-0">
+                                <span className="text-4xl font-light text-black/20 group-hover:text-black/40 transition-colors w-24 flex-shrink-0">
                                     {item.year}
                                 </span>
-                                <div className="w-3 h-3 rounded-full border border-white/20 bg-[#0a0a0a] flex-shrink-0" />
-                                <p className="text-white/60 text-lg font-light group-hover:text-white/80 transition-colors">
+                                <div className="w-3 h-3 rounded-full border border-black/10 bg-white flex-shrink-0 group-hover:bg-[#6CD8D1] transition-colors" />
+                                <p className="text-black/60 text-lg font-light group-hover:text-black/80 transition-colors">
                                     {item.event}
                                 </p>
                             </motion.div>
@@ -183,16 +183,16 @@ export default function AboutPage() {
             </section>
 
             {/* CTA Section */}
-            <section className="py-32 px-6 lg:px-12 border-t border-white/[0.05]">
+            <section className="py-32 px-6 lg:px-12 border-t border-black/[0.05]">
                 <div className="max-w-4xl mx-auto text-center">
-                    <h2 className="text-4xl md:text-5xl font-light mb-6">
-                        Interested in a <span className="font-serif italic text-white/80">Commission</span>?
+                    <h2 className="text-4xl md:text-5xl font-light mb-6 text-black">
+                        Interested in a <span className="font-serif italic text-black/60">Commission</span>?
                     </h2>
-                    <p className="text-white/40 text-lg mb-12 font-light max-w-xl mx-auto">
+                    <p className="text-black/40 text-lg mb-12 font-light max-w-xl mx-auto">
                         Create a bespoke piece tailored to your vision. Let's bring your artistic dreams to life.
                     </p>
                     <Link href="/contact">
-                        <span className="group inline-flex items-center gap-4 px-10 py-5 bg-white text-black rounded-full text-lg font-medium hover:bg-white/90 transition-all">
+                        <span className="group inline-flex items-center gap-4 px-10 py-5 bg-black text-white rounded-full text-lg font-medium hover:bg-black/80 transition-all">
                             Get in Touch
                             <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                         </span>

@@ -4,6 +4,8 @@ import { Inter } from 'next/font/google';
 import { defaultMetadata } from '@/lib/seo';
 import { generateOrganizationSchema, generateWebsiteSchema, generateLocalBusinessSchema } from '@/lib/schema';
 import { Providers } from './providers';
+import { NoiseOverlay } from '@/components/ui/noise-overlay';
+import { ScrollProgress } from '@/components/ui/scroll-progress';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -23,7 +25,7 @@ export default function RootLayout({
   const localBusinessSchema = generateLocalBusinessSchema();
 
   return (
-    <html lang="en-LK" className="dark">
+    <html lang="en-LK" className="light overflow-x-hidden">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -56,7 +58,9 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
         />
       </head>
-      <body className={`${inter.className} bg-black`}>
+      <body className={`${inter.className} bg-white antialiased`}>
+        <ScrollProgress />
+        <NoiseOverlay />
         <Providers>{children}</Providers>
       </body>
     </html>
